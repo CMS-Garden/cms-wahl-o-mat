@@ -1,3 +1,41 @@
 <p>
     Change own password etc.
 </p>
+<dl>
+    <dt>username</dt><dd>{{ username }}</dd>
+    <dt>roles</dt>
+    <dd>
+        <ul>
+        {% for role in roles %}
+            <li>{{ role }}</li>
+        {% endfor %}
+        </ul>
+    </dd>
+    <dt>has role admin?</dt>
+    <dd>
+        {% if is_granted('ROLE_ADMIN') %}
+            <em style="color:#0f0; font-weight: bold">true</em>
+        {% else %}
+            <em style="color:#f00; font-weight: bold">false</em>
+        {% endif %}
+    </dd>
+    <dt>has role user?</dt>
+    <dd>
+        {% if is_granted('ROLE_USER') %}
+            <em style="color:#0f0; font-weight: bold">true</em>
+        {% else %}
+            <em style="color:#f00; font-weight: bold">false</em>
+        {% endif %}
+    </dd>
+     <dt>has role editor?</dt>
+    <dd>
+        {% if is_granted('ROLE_EDITOR') %}
+            <em style="color:#0f0; font-weight: bold">true</em>
+        {% else %}
+            <em style="color:#f00; font-weight: bold">false</em>
+        {% endif %}
+    </dd>
+</dl>
+<pre>
+    {{ roles_dump }}
+</pre>

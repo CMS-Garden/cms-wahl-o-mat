@@ -1,13 +1,25 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta charset="UTF-8" />
+        <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
-        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+        {% block stylesheets %}
+            {% stylesheets 'assets/css/*' filter='scssphp' output='cms-compass.css' 
+                "assets/scss/cms-compass.scss"
+                "assets/css/base.css"
+            %}
+            <link rel="stylesheet" href="{{ asset_url }}">
+            {% endstylesheets %}
+        {% endblock %}
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     </head>
     <body>
-        {% block body %}{% endblock %}
+        <header>
+            CMS Garden CMS Compass
+        </header>
+        <main>
+            {% block body %}{% endblock %}
+        </main>
         {% block javascripts %}{% endblock %}
     </body>
 </html>

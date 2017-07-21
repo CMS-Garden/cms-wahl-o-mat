@@ -1,3 +1,54 @@
-<p>
-    List of users
-</p>
+{% extends "base.html.twig" %}
+
+{% block title %}Manage users - CMS Garden CMS Compass {% endblock %}
+
+{% block body %}
+
+    <h1>All users</h1>
+
+    <a href="{{ path('admin_create_new_user') }}">Add new user</a>
+    <form action="{{ path('admin_list_users') }}" 
+          method="GET" 
+          class="table-filter-form">
+        <label for="filter">Filter users</label>
+        <input type="text" name="filter" id="filter" value="{{ userFilter }}">
+        <button type="submit">Filter users</button>
+    </form>
+    <p>Filter is {{ userFilter }}</p>
+    <table>
+        <thead>
+            <tr>
+                <th id="col_username_header">Username</th>
+                <th id="col_email_header">E-Mail</th>
+                <th id="col_isactive_header">is active?</th>
+                <th id="col_roles_header">Roles</th>
+                <th id="col_actions_header" colspan="2">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+                <tr>
+                    <td id="col_username">{{ user.username }}</td>
+                    <td id="col_email">{{ user.email }}</td>
+                    <td id="col_isactive">{{ user.isActive }}</td>
+                    <td id="col_roles">
+                        <ul>
+                            {% for role in user.roles %}
+                                <li>{{ role }}</li>
+                                {% endfor %}
+                        </ul>
+                    </td>
+                    <td id="col_edit">
+                        <a href="#">Edit</a>
+                    </td>
+                    <td id="col_disable">
+                        <a href="#">Disable</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+
+{% endblock %}

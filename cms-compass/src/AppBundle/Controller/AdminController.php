@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/*
  * Copyright (C) 2017 CMS Garden e.V.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,6 +21,13 @@ namespace AppBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use AppBundle\Entity\User;
 
 /**
  * Controller for the Admin UI.
@@ -40,12 +47,55 @@ class AdminController extends Controller
 
     /**
      *
-     * @Route("/admin/users")
+     * @Route("/admin/users", name="admin_list_users")
      * 
      */
-    public function listUsers()
+    public function listUsers(Request $request)
     {
-        return $this->render('admin/users.html.twig');
+        $userFilter = $request->query->get("filter", "");
+
+        $userRepo = $this->getDoctrine()->getRepository(User::class);
+        $users = $userRepo->filterUsersByUsernameOrEmail($userFilter);
+
+        return $this->render('admin/users.html.twig', array(
+                    'userFilter' => $userFilter,
+                    'users' => $users
+        ));
+    }
+
+    /**
+     * @Route("/admin/users/new", name="admin_create_new_user")
+     */
+    public function newUserAction(Request $request, UserPasswordEncoderInterface $encoder)
+    {
+
+        $user = new User();
+
+        $form = $this->createFormBuilder($user)
+                ->add('username', TextType::class, array('label' => 'User name'))
+                ->add('email', EmailType::class, array('label' => 'E-Mail'))
+                ->add('password', PasswordType::class, array('label' => 'Initial password'))
+                ->add('create-user', SubmitType::class, array('label' => 'Create new user'))
+                ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $user = $form->getData();
+            $user->setPassword($encoder->encodePassword($user, $user->getPassword()));
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('admin_list_users');
+        }
+
+        return $this->render('admin/user-form.html.twig', array(
+                    'form' => $form->createView(),
+                    'newUser' => true
+        ));
     }
 
     /**
@@ -55,9 +105,9 @@ class AdminController extends Controller
     public function showUserDetails($user)
     {
         return $this->render('admin/user-details.html.twig', array(
-            'user' => $user
+                    'user' => $user
         ));
-    } 
+    }
 
     /**
      * @Route("/admin/features")
@@ -74,7 +124,7 @@ class AdminController extends Controller
     public function showFeatureDetails($feature)
     {
         return $this->render('admin/feature-details.html.twig', array(
-            'feature' => $feature
+                    'feature' => $feature
         ));
     }
 
@@ -92,7 +142,7 @@ class AdminController extends Controller
     public function showCmsDetails($cms)
     {
         return $this->render('admin/cms-details.html.twig', array(
-            'cms' => $cms
+                    'cms' => $cms
         ));
     }
 

@@ -1,7 +1,7 @@
 <?php
 
-/* 
- * Copyright (C) 2017 CMS Garden e.V.
+/*
+ * Copyright (C) 2017 <a href="mailto:jens.pelzetter@googlemail.com">Jens Pelzetter</a>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,28 +19,36 @@
 
 namespace AppBundle\Controller;
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 /**
- * Description of MyProfileController
+ * Description of SecurityController
  *
  * @author <a href="mailto:jens.pelzetter@googlemail.com">Jens Pelzetter</a>
  */
-class MyProfileController extends Controller
+class SecurityController extends Controller
 {
 
     /**
-     * @Route("/my-profile")
+     * @Route("/login", name="login")
+     * 
+     * 
      */
-    public function showMyProfile(UserInterface $user)
+    public function loginAction(Request $request, AuthenticationUtils $authUtils)
     {
-        return $this->render('my-profile/my-profile.html.twig', array(
-                'username' => $user->getUsername(),
-                'roles' => $user->getRoles(),
-                'roles_dump' => var_dump($user->getRoles())
-                ));
+        
+        $error = $authUtils->getLastAuthenticationError();
+        
+        $lastUsername = $authUtils->getLastUsername();
+        
+        return $this->render('security/login.html.twig', array(
+            'last_username' => $lastUsername,
+            'error' => $error
+        ));
+        
     }
 
 }
