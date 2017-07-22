@@ -4,6 +4,7 @@
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
         {% block stylesheets %}
+            
             {% stylesheets 'assets/css/*' filter='scssphp' output='cms-compass.css' 
                 "assets/scss/cms-compass.scss"
                 "assets/css/base.css"
@@ -23,3 +24,4 @@
         {% block javascripts %}{% endblock %}
     </body>
 </html>
+ 
