@@ -33,10 +33,26 @@ class UserRepository extends EntityRepository implements UserLoaderInterface
 
     public function loadUserByUsername($username)
     {
-        return $this->createQueryBuilder('u')
-                        ->where('u.username = :username OR u.email = :email')
+        $queryBuilder = $this->createQueryBuilder('u');
+        
+        return $queryBuilder
+//                        ->where('u.username = :username OR u.email = :email')
+                        ->where($queryBuilder->expr()->orX(
+                                        $queryBuilder->expr()->eq('u.username', ':username', $queryBuilder->expr()->eq('email', ':email'))
+                        ))
                         ->setParameter('username', $username)
                         ->setParameter('email', $username)
+                        ->getQuery()
+                        ->getOneOrNullResult();
+    }
+
+    public function findByUsername($username)
+    {
+        $queryBuilder = $this->createQueryBuilder('u');
+
+        return $queryBuilder
+                        ->where($queryBuilder->expr()->eq('u.username', ':username'))
+                        ->setParameter('username', $username)
                         ->getQuery()
                         ->getOneOrNullResult();
     }
@@ -50,8 +66,8 @@ class UserRepository extends EntityRepository implements UserLoaderInterface
                                         $queryBuilder->expr()->like('u.username', ':username'), $queryBuilder->expr()->like('u.email', ':email')
                         ))
                         ->orderBy('u.username', 'ASC')
-                        ->setParameter('username', '%'. $filter . '%')
-                        ->setParameter('email', '%'. $filter. '%')
+                        ->setParameter('username', '%' . $filter . '%')
+                        ->setParameter('email', '%' . $filter . '%')
                         ->getQuery()
                         ->getResult();
     }

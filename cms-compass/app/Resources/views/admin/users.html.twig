@@ -22,7 +22,7 @@
                 <th id="col_email_header">E-Mail</th>
                 <th id="col_isactive_header">is active?</th>
                 <th id="col_roles_header">Roles</th>
-                <th id="col_actions_header" colspan="2">Actions</th>
+                <th id="col_actions_header">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -30,7 +30,13 @@
                 <tr>
                     <td id="col_username">{{ user.username }}</td>
                     <td id="col_email">{{ user.email }}</td>
-                    <td id="col_isactive">{{ user.isActive }}</td>
+                    <td id="col_isactive">
+                        {% if user.isActive %}
+                            Yes
+                        {% else %}
+                            No
+                        {% endif %}
+                    </td>
                     <td id="col_roles">
                         <ul>
                             {% for role in user.roles %}
@@ -39,10 +45,7 @@
                         </ul>
                     </td>
                     <td id="col_edit">
-                        <a href="#">Edit</a>
-                    </td>
-                    <td id="col_disable">
-                        <a href="#">Disable</a>
+                        <a href="{{ path("admin_edit_user", {'username': user.username}) }}">Edit</a>
                     </td>
                 </tr>
             {% endfor %}

@@ -58,7 +58,7 @@ class User implements UserInterface, \Serializable
      * @ORM\Column(type="string", length=256, unique=true)
      */
     private $email;
-    
+
     /**
      *
      * @ORM\Column(type="array",nullable=true)
@@ -135,7 +135,6 @@ class User implements UserInterface, \Serializable
     public function getRoles()
     {
         return $this->roles;
-//        return array('ROLE_ADMIN', 'ROLE_EDITOR');
     }
 
     public function setRoles($roles)
@@ -145,15 +144,19 @@ class User implements UserInterface, \Serializable
 
     public function addRole($role)
     {
-       $this->roles[] = $role;
-    }
-    
-    public function removeRole($role) {
-        $key = array_search($role, $this->roles);
-        if ($key) {
-            unset($this->roles[$key]);
-            array_values($this->roles);
+        if (false === array_search($role, $this->roles)) {
+            $this->roles[] = $role;
+            $this->roles = array_values($this->roles);
         }
+    }
+
+    public function removeRole($role)
+    {
+        $key = array_search($role, $this->roles);
+        if (false !== $key) {
+            unset($this->roles[$key]);
+            $this->roles = array_values($this->roles);
+        } 
     }
 
     public function eraseCredentials()

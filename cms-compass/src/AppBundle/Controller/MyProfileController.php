@@ -32,7 +32,7 @@ class MyProfileController extends Controller
 {
 
     /**
-     * @Route("/my-profile")
+     * @Route("/my-profile", name="my-profile")
      */
     public function showMyProfile(UserInterface $user)
     {

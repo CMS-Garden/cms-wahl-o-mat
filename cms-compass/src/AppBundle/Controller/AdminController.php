@@ -24,7 +24,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use AppBundle\Entity\User;
@@ -66,15 +66,19 @@ class AdminController extends Controller
     /**
      * @Route("/admin/users/new", name="admin_create_new_user")
      */
-    public function newUserAction(Request $request, UserPasswordEncoderInterface $encoder)
+    public function newUserAction(Request $request, UserPasswordEncoderInterface $encoder, \Swift_Mailer $mailer)
     {
 
-        $user = new User();
-
-        $form = $this->createFormBuilder($user)
+//        $user = new User();
+//        $form = $this->createFormBuilder($user)
+//                ->add('username', TextType::class, array('label' => 'User name'))
+//                ->add('email', EmailType::class, array('label' => 'E-Mail'))
+//                ->add('password', PasswordType::class, array('label' => 'Initial password'))
+//                ->add('create-user', SubmitType::class, array('label' => 'Create new user'))
+//                ->getForm();
+        $form = $this->createFormBuilder()
                 ->add('username', TextType::class, array('label' => 'User name'))
                 ->add('email', EmailType::class, array('label' => 'E-Mail'))
-                ->add('password', PasswordType::class, array('label' => 'Initial password'))
                 ->add('create-user', SubmitType::class, array('label' => 'Create new user'))
                 ->getForm();
 
@@ -82,12 +86,37 @@ class AdminController extends Controller
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $user = $form->getData();
-            $user->setPassword($encoder->encodePassword($user, $user->getPassword()));
+            $data = $form->getData();
+
+            $user = new User();
+            $user->setUsername($data['username']);
+            $user->setEmail($data['email']);
+            $user->setIsActive(true);
+
+            $initialPassword = base64_encode(random_bytes(12));
+            $user->setPassword($encoder->encodePassword($user, $initialPassword));
+
+//            $user = $form->getData();
+//            $user->setPassword($encoder->encodePassword($user, $user->getPassword()));
 
             $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->beginTransaction();
             $entityManager->persist($user);
             $entityManager->flush();
+
+            $message = (new \Swift_Message('Your user account for the CMS Garden CMS Compass'))
+                    ->setFrom('tech@cms-garden.org')
+                    ->setTo($user->getEmail())
+                    ->setBody(
+                    $this->renderView(
+                            'mails/user-info.txt.twig', array(
+                        'username' => $user->getUsername(),
+                        'password' => $initialPassword)
+                    ), 'text/plain'
+            );
+            $mailer->send($message);
+
+            $entityManager->commit();
 
             return $this->redirectToRoute('admin_list_users');
         }
@@ -100,11 +129,71 @@ class AdminController extends Controller
 
     /**
      * 
-     * @Route("/admin/users/{user}")
+     * @Route("/admin/users/{username}", name="admin_edit_user")
      */
-    public function showUserDetails($user)
+    public function editUser(Request $request, $username)
     {
-        return $this->render('admin/user-details.html.twig', array(
+        $userRepo = $this->getDoctrine()->getRepository(User::class);
+        $user = $userRepo->findByUsername($username);
+
+        if (!$user) {
+            throw $this->createNotFoundException('No user with username ' . $username);
+        }
+
+        $formBuilder = $this->createFormBuilder()
+                ->add('username', TextType::class, array(
+                    'label' => 'User name',
+                    'data' => $user->getUsername()))
+                ->add('email', EmailType::class, array(
+                    'label' => 'E-Mail',
+                    'data' => $user->getEmail()))
+                ->add('isactive', CheckboxType::class, array(
+            'label' => 'Is active?',
+            'required' => false,
+            'data' => $user->getIsActive()));
+        
+        $roles = $this->getRoles();
+        foreach($roles as $role) {
+            $formBuilder->add($role, CheckboxType::class, array(
+                'label' => $role,
+                'required' => false,
+                'data' => false !== array_search($role , $user->getRoles())
+            ));
+        }
+
+        $formBuilder->add('update-user', SubmitType::class, array('label' => 'Update user'));
+        $form = $formBuilder->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $data = $form->getData();
+
+            $user->setUsername($data['username']);
+            $user->setEmail($data['email']);
+            $user->setIsActive($data['isactive']);
+            
+            foreach($roles as $role) {
+                if($data[$role]) {
+                    $user->addRole($role);
+                } else {
+                    $user->removeRole($role);
+                }
+            }
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->beginTransaction();
+            $entityManager->persist($user);
+            $entityManager->flush();
+            $entityManager->commit();
+
+            return $this->redirectToRoute('admin_list_users');
+        }
+
+        return $this->render('admin/user-form.html.twig', array(
+                    'form' => $form->createView(),
+                    'newUser' => false,
                     'user' => $user
         ));
     }
@@ -146,4 +235,10 @@ class AdminController extends Controller
         ));
     }
 
+    private function getRoles() {
+        return array(
+            'ROLE_ADMIN',
+            'ROLE_CMSEDITOR'
+        );
+    }
 }
