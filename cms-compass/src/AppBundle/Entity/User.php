@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (C) 2017 <a href="mailto:jens.pelzetter@googlemail.com">Jens Pelzetter</a>
+ * Copyright (C) 2017 CMS Garden e.V.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

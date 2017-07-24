@@ -1,3 +1,42 @@
-<p>
-    list of all features
-</p>
+{% extends "base.html.twig" %}
+
+{% block title %}Manage features - CMS Garden CMS Compass {% endblock %}
+
+{% block body %}
+
+    <h1>All features</h1>
+
+    <a href="{{ path('admin_create_new_feature') }}">Add new feature</a>
+    <form action="{{ path('admin_list_features') }}"
+          method="GET"
+          class="table-filter-form">
+        <label for="filter">Filter features</label>
+        <input type="text" name="filter" id="filter" value="{{ featureFilter }}"/>
+        <button>Filter features</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th id="col_name_header">Name</th>
+                <th id="col_title_header">Title</th>
+                <th id="col_actions_header" colspan="2"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for feature in features %}
+                <tr>
+                    <td class="col_name">{{ feature.name }}</td>
+                    <td class="col_title">{{ feature.title['en'] }}</td>
+                    <td class="col_edit">
+                        <a href="{{ path('admin_edit_feature', {'featurename': feature.name}) }}">Edit</a>
+                    </td>
+                    <td class="col_delete">
+                        <a href="{{ path('admin_delete_feature', {'featurename': feature.name}) }}">Delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

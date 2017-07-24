@@ -23,11 +23,13 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use AppBundle\Entity\User;
+use AppBundle\Entity\Feature;
 
 /**
  * Controller for the Admin UI.
@@ -52,7 +54,7 @@ class AdminController extends Controller
      */
     public function listUsers(Request $request)
     {
-        $userFilter = $request->query->get("filter", "");
+        $userFilter = $request->query->get('filter', "");
 
         $userRepo = $this->getDoctrine()->getRepository(User::class);
         $users = $userRepo->filterUsersByUsernameOrEmail($userFilter);
@@ -151,17 +153,17 @@ class AdminController extends Controller
             'label' => 'Is active?',
             'required' => false,
             'data' => $user->getIsActive()));
-        
+
         $roles = $this->getRoles();
-        foreach($roles as $role) {
+        foreach ($roles as $role) {
             $formBuilder->add($role, CheckboxType::class, array(
                 'label' => $role,
                 'required' => false,
-                'data' => false !== array_search($role , $user->getRoles())
+                'data' => false !== array_search($role, $user->getRoles())
             ));
         }
 
-        $formBuilder->add('update-user', SubmitType::class, array('label' => 'Update user'));
+        $formBuilder->add('update-user', SubmitType::class, array('label' => 'Save'));
         $form = $formBuilder->getForm();
 
         $form->handleRequest($request);
@@ -173,9 +175,9 @@ class AdminController extends Controller
             $user->setUsername($data['username']);
             $user->setEmail($data['email']);
             $user->setIsActive($data['isactive']);
-            
-            foreach($roles as $role) {
-                if($data[$role]) {
+
+            foreach ($roles as $role) {
+                if ($data[$role]) {
                     $user->addRole($role);
                 } else {
                     $user->removeRole($role);
@@ -184,7 +186,7 @@ class AdminController extends Controller
 
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->beginTransaction();
-            $entityManager->persist($user);
+            $entityManager->merge($user);
             $entityManager->flush();
             $entityManager->commit();
 
@@ -199,22 +201,126 @@ class AdminController extends Controller
     }
 
     /**
-     * @Route("/admin/features")
+     * @Route("/admin/features", name="admin_list_features")
      */
-    public function listFeatures()
+    public function listFeatures(Request $request)
     {
-        return $this->render('admin/features.html.twig');
+        $featureFilter = $request->query->get('filter', "");
+
+        $featureRepo = $this->getDoctrine()->getRepository(Feature::class);
+        $features = $featureRepo->filterFeaturesByTitle($featureFilter);
+
+        return $this->render('admin/features.html.twig', array(
+                    'featureFilter' => $featureFilter,
+                    'features' => $features
+        ));
     }
 
     /**
      * 
-     * @Route("/admin/features/{feature}")
+     * @Route("/admin/features/new", name="admin_create_new_feature")
      */
-    public function showFeatureDetails($feature)
+    public function newFeatureAction(Request $request)
     {
-        return $this->render('admin/feature-details.html.twig', array(
-                    'feature' => $feature
+
+        $form = $this->createFormBuilder()
+                ->add('featurename', TextType::class, array('label' => 'Name'))
+                ->add('title', TextType::class, array('label' => 'Title'))
+                ->add('description', TextareaType::class, array('label' => 'Description'))
+                ->add('create-feature', SubmitType::class, array('label' => 'Create new feature'))
+                ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $data = $form->getData();
+
+            $feature = new Feature();
+            $feature->setName($data['featurename']);
+            $feature->addTitleForLanguage('en', $data['title']);
+            $feature->addDescriptionForLanguage('en', $data['description']);
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($feature);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('admin_list_features');
+        }
+
+        return $this->render('admin/feature-form.html.twig', array(
+                    'form' => $form->createView(),
+                    'newFeature' => true
         ));
+    }
+
+    /**
+     * 
+     * @Route("/admin/features/{featurename}", name="admin_edit_feature")
+     */
+    public function editFeature(Request $request, $featurename)
+    {
+        $featureRepo = $this->getDoctrine()->getRepository(Feature::class);
+        $feature = $featureRepo->findFeatureByName($featurename);
+
+        if (!$feature) {
+            throw $this->createNotFoundException('No feature with name ' . $featurename);
+        }
+        $form = $this->createFormBuilder()
+                ->add('featurename', TextType::class, array(
+                    'label' => 'Name',
+                    'data' => $feature->getName()))
+                ->add('title', TextType::class, array(
+                    'label' => 'Title',
+                    'data' => $feature->getTitleForLanguage('en')))
+                ->add('description', TextareaType::class, array(
+                    'label' => 'Description',
+                    'data' => $feature->getDescriptionForLanguage('en')))
+                ->add('update-feature', SubmitType::class, array('label' => 'Save'))
+                ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $data = $form->getData();
+
+            $feature->setName($data['featurename']);
+            $feature->addTitleForLanguage('en', $data['title']);
+            $feature->addDescriptionForLanguage('en', $data['description']);
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->merge($feature);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('admin_list_features');
+        }
+
+        return $this->render('admin/feature-form.html.twig', array(
+                    'form' => $form->createView(),
+                    'feature' => $feature,
+                    'newFeature' => false
+        ));
+    }
+
+    /**
+     * 
+     * @Route("/admin/features/{featurename}/delete", name="admin_delete_feature")
+     */
+    public function deleteFeature($featurename)
+    {
+        $featureRepo = $this->getDoctrine()->getRepository(Feature::class);
+        $feature = $featureRepo->findFeatureByName($featurename);
+
+        if (!$feature) {
+            throw $this->createNotFoundException('No feature with name ' . $featurename);
+        }
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->remove($feature);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('admin_list_features');
     }
 
     /**
@@ -235,10 +341,12 @@ class AdminController extends Controller
         ));
     }
 
-    private function getRoles() {
+    private function getRoles()
+    {
         return array(
             'ROLE_ADMIN',
             'ROLE_CMSEDITOR'
         );
     }
+
 }

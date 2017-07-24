@@ -28,9 +28,9 @@
         <tbody>
             {% for user in users %}
                 <tr>
-                    <td id="col_username">{{ user.username }}</td>
-                    <td id="col_email">{{ user.email }}</td>
-                    <td id="col_isactive">
+                    <td class="col_username">{{ user.username }}</td>
+                    <td class="col_email">{{ user.email }}</td>
+                    <td class="col_isactive">
                         {% if user.isActive %}
                             Yes
                         {% else %}

@@ -1,0 +1,20 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Manage users - CMS Garden CMS Compass {% endblock %}
+
+{% block body %}
+
+    <h1>
+        {% if newFeature %}
+            Create new feature
+        {% else %}
+            Edit feature {{ feature.name }}
+        {% endif %}
+    </h1>
+    
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    <a href="{{ path('admin_list_features') }}">Cancel</a>
+    {{ form_end(form) }}
+
+{% endblock %}
