@@ -1,0 +1,20 @@
+
+
+{% block title %}Manage CMS - CMS Garden CMS Compass {% endblock %}
+
+{% block body %}
+
+    <h1>
+        {% if newCms %}
+            Create new CMS
+        {% else %}
+            Edit CMS {{ cms.name }}
+        {% endif %}
+    </h1>
+    
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    <a href="{{ path('admin_list_cms') }}">Cancel</a>
+    {{ form_end(form) }}
+
+{% endblock %}

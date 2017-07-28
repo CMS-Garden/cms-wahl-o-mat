@@ -17,30 +17,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Entity class for the available Feature.s
- *
+ * Entity class for representing a CMS.
+ * 
  * @author <a href="mailto:jens.pelzetter@googlemail.com">Jens Pelzetter</a>
  */
-
 /**
- * @ORM\Table(name="features")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\FeatureRepository")
+ * @ORM\Table(name="cms")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\CmsRepository")
  */
-class Feature
+class CMS
 {
-
+    
     /**
      * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $featureId;
-
+    private $cmsId;
+    
     /**
      * @ORM\Column(type="string", length=256, unique=true)
      *
@@ -48,109 +48,108 @@ class Feature
     private $name;
 
     /**
-     * @ORM\Column(type="array")
+     * @ORM\Column(type="string", length=2048, unique=true)
      *
-     */
-    private $title;
-
+     */    
+    private $homepage;
+    
     /**
      * @ORM\Column(type="array")
      *
      */
     private $description;
-
-    public function __construct()
-    {
-        $this->title = array();
+    
+    public function __construct() {
+        
         $this->description = array();
     }
-
-    public function getFeatureId()
+    /**
+     * @return the $cmsId
+     */
+    public function getCmsId()
     {
-        return $this->featureId;
+        return $this->cmsId;
     }
 
+    /**
+     * @return the $name
+     */
     public function getName()
     {
         return $this->name;
     }
 
-    public function getTitle()
+    /**
+     * @return the $homepage
+     */
+    public function getHomepage()
     {
-        return $this->title;
+        return $this->homepage;
     }
 
+    /**
+     * @return the $description
+     */
     public function getDescription()
     {
         return $this->description;
     }
 
-    public function setFeatureId($featureId)
+    /**
+     * @param field_type $cmsId
+     */
+    public function setCmsId($cmsId)
     {
-        $this->featureId = $featureId;
+        $this->cmsId = $cmsId;
     }
 
+    /**
+     * @param field_type $name
+     */
     public function setName($name)
     {
         $this->name = $name;
     }
 
-    public function setTitle($title)
+    /**
+     * @param field_type $homepage
+     */
+    public function setHomepage($homepage)
     {
-        $this->title = $title;
+        $this->homepage = $homepage;
     }
 
+    /**
+     * @param multitype: $description
+     */
     public function setDescription($description)
     {
         $this->description = $description;
     }
 
-    public function getTitleForLanguage($language)
-    {
-        if ($this->hasTitleForLanguage($language)) {
-            return $this->title[$language];
-        } else {
-            return null;
-        }
-    }
-
-    public function hasTitleForLanguage($language)
-    {
-        return array_key_exists($language, $this->title);
-    }
-
-    public function addTitleForLanguage($language, $title)
-    {
-        $this->title[$language] = $title;
-    }
-
-    public function removeTitleForLanguage($language)
-    {
-        unset($this->title[$language]);
-    }
-
+    
     public function getDescriptionForLanguage($language)
-    {
+    {     
         if ($this->hasDescriptionForLanguage($language)) {
             return $this->description[$language];
         } else {
             return null;
         }
     }
-
+    
     public function hasDescriptionForLanguage($language)
     {
         return array_key_exists($language, $this->description);
     }
-
+    
     public function addDescriptionForLanguage($language, $description)
     {
-        $this->description[$language] = $description;
+        $this->title[$language] = $description;
     }
-
+    
     public function removeDescriptionForLanguage($language)
     {
         unset($this->description[$language]);
     }
-
 }
+

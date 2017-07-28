@@ -17,3 +17,6 @@
 /web/bundles/
 nbproject/
 nbproject/*
+.buildpath
+.project
+.settings

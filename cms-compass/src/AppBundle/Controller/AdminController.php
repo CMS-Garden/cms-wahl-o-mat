@@ -30,6 +30,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use AppBundle\Entity\User;
 use AppBundle\Entity\Feature;
+use AppBundle\Entity\CMS;
 
 /**
  * Controller for the Admin UI.
@@ -71,13 +72,6 @@ class AdminController extends Controller
     public function newUserAction(Request $request, UserPasswordEncoderInterface $encoder, \Swift_Mailer $mailer)
     {
 
-//        $user = new User();
-//        $form = $this->createFormBuilder($user)
-//                ->add('username', TextType::class, array('label' => 'User name'))
-//                ->add('email', EmailType::class, array('label' => 'E-Mail'))
-//                ->add('password', PasswordType::class, array('label' => 'Initial password'))
-//                ->add('create-user', SubmitType::class, array('label' => 'Create new user'))
-//                ->getForm();
         $form = $this->createFormBuilder()
                 ->add('username', TextType::class, array('label' => 'User name'))
                 ->add('email', EmailType::class, array('label' => 'E-Mail'))
@@ -205,7 +199,7 @@ class AdminController extends Controller
      */
     public function listFeatures(Request $request)
     {
-        $featureFilter = $request->query->get('filter', "");
+        $featureFilter = $request->query->get('filter', '');
 
         $featureRepo = $this->getDoctrine()->getRepository(Feature::class);
         $features = $featureRepo->filterFeaturesByTitle($featureFilter);
@@ -324,20 +318,134 @@ class AdminController extends Controller
     }
 
     /**
-     * @Route("/admin/cms")
+     * @Route("/admin/cms", name="admin_list_cms")
      */
-    public function listCms()
+    public function listCms(Request $request)
     {
-        return $this->render('admin/cms-list.html.twig');
+        $cmsFilter = $request->query->get('filter', '');
+        
+        $cmsRepo = $this->getDoctrine()->getRepository(CMS::class);
+        $cmsList = $cmsRepo->filterCmsByName($cmsFilter);
+        
+        return $this->render('admin/cms-list.html.twig', array(
+            'cmsFilter' => $cmsFilter,
+            'cmsList' => $cmsList
+        ));
     }
 
     /**
-     * @Route("/admin/cms/{cms}")
+     * @Route("/admin/cms/new", name="admin_create_new_cms")
      */
-    public function showCmsDetails($cms)
+    public function createNewCms(Request $request) {
+        
+        $form = $this->createFormBuilder()
+            ->add('name', TextType::class, array('label' => 'Name'))
+            ->add('homepage', TextType::class, array('label' => 'Homepage'))
+            ->add('description', TextareaType::class, array('label' => 'Description'))
+            ->add('create-cms', SubmitType::class, array('label' => 'Create new CMS'))
+            ->getForm();
+        
+        $form->handleRequest($request);
+        
+        if ($form->isSubmitted() && $form->isValid()) {
+            
+            $data = $form->getData();
+            
+            $cms = new CMS();
+            $cms->setName($data['name']);
+            $cms->setHomepage($data['homepage']);
+            $cms->addDescriptionForLanguage('en', $data['description']);
+            
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($cms);
+            $entityManager->flush();
+            
+            return $this->redirectToRoute('admin_list_cms');
+        }
+        
+        return $this->render('admin/cms-form.html.twig', array(
+            'form' => $form->createView(),
+            'newCms' => true
+        ));
+    }
+    
+    /**
+     * @Route("/admin/cms/{cmsId}/edit", name="admin_edit_cms")
+     */
+    public function editCms(Request $request, $cmsId) {
+        
+        $cmsRepo = $this->getDoctrine()->getRepository(CMS::class);
+        $cms = $cmsRepo->find($cmsId);
+        
+        if (!$cms) {
+            throw $this->createNotFoundException('No CMS with ID ' . $cmsId);
+        }
+        
+        $form = $this->createFormBuilder()
+            ->add('name', TextType::class, array(
+                'label' => 'Name',
+                'data' => $cms->getName()))
+            ->add('homepage', TextType::class, array(
+                'label' => 'Homepage',
+                'data' => $cms->getHomepage()))
+            ->add('description', TextareaType::class, array(
+                'label' => 'Description',
+                'data' => $cms->getDescriptionForLanguage('en')))
+            ->add('update-cms', SubmitType::class, array('label' => 'Save'))
+            ->getForm();
+        
+        $form->handleRequest($request);
+        
+        if ($form->isSubmitted() && $form->isValid()) {
+            
+            $data = $form->getData();
+            
+            $cms->setName($data['name']);
+            $cms->setHomepage($data['homepage']);
+            $cms->addDescriptionForLanguage('en', $data['description']);
+            
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->merge($cms);
+            $entityManager->flush();
+            
+            return $this->redirectToRoute('admin_list_cms');
+        }
+        
+        return $this->render('admin/cms-form.html.twig', array(
+            'form' => $form->createView(),
+            'cms' => $cms,
+            'newCms' => false
+        ));
+    }
+    
+    /**
+     * @Route("/admin/cms/{cmsId}/delete", name="admin_delete_cms")
+     * 
+     */
+    public function deleteCMS($cmsId) {
+        
+        $cmsRepo = $this->getDoctrine()->getRepository(CMS::class);
+        $cms = $cmsRepo->find($cmsId);
+        
+        if (!$cms) {
+            throw $this->createNotFoundException('No CMS with ID ' . $cmsId);
+        }
+        
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->remove($cms);
+        $entityManager->flush();
+        
+        return $this->redirectToRoute('admin_list_cms');
+        
+    }
+    
+    /**
+     * @Route("/admin/cms/{cmsId}", name="admin_show_cms_details")
+     */
+    public function showCmsDetails($cmsId)
     {
         return $this->render('admin/cms-details.html.twig', array(
-                    'cms' => $cms
+                    'cms' => $cmsId
         ));
     }
 
