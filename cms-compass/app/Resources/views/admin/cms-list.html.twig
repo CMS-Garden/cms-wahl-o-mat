@@ -4,39 +4,39 @@
 
 {% block body %}
 
-	<h1>All CMS</h1>
-	
-	<a href="{{ path('admin_create_new_cms') }}">Add new CMS</a>
-	<form action="{{ path('admin_list_cms') }}"
-		  method="GET"
-		  class="filter-table-form">
-		 <label form="filter">Filter CMS</label>
-		 <input type="text" name="filter" id="filter" value="{{ cmsFilter }}"/>
-		 <button>Filter CMS</button>
-	</form>
-	
-	<table>
-		<thead>
-			<th id="col_name_header">Name</th>
-			<th id="col_actions_header" colspan="2"></th>
-		</thead>
-		<tbody>
-			{% for cms in cmsList %}
-				<tr>
-					<td class="col_name">
-				    	<a href="{{ path('admin_show_cms_details', {'cmsId': cms.cmsId}) }}">
-				            {{ cms.name }}
-				    	</a>
-					</td>
-					 <td class="col_edit">
-                        <a href="{{ path('admin_edit_cms', {'cmsId': cms.cmsId}) }}">Edit</a>
-                    </td>
-                    <td class="col_delete">
-                        <a href="{{ path('admin_delete_cms', {'cmsId': cms.cmsId}) }}">Delete</a>
-                    </td>
-				</tr>
-			{%  endfor %}
-		</tbody>
-	</table>
+    <h1>All CMS</h1>
+
+    <a href="{{ path('admin_create_new_cms') }}">Add new CMS</a>
+    <form action="{{ path('admin_list_cms') }}"
+          method="GET"
+          class="filter-table-form">
+        <label form="filter">Filter CMS</label>
+        <input type="text" name="filter" id="filter" value="{{ cmsFilter }}"/>
+        <button>Filter CMS</button>
+    </form>
+
+    <table>
+        <thead>
+        <th id="col_name_header">Name</th>
+        <th id="col_actions_header" colspan="2"></th>
+    </thead>
+    <tbody>
+        {% for cms in cmsList %}
+            <tr>
+                <td class="col_name">
+                    <a href="{{ path('admin_show_cms_details', {'cmsId': cms.cmsId}) }}">
+                        {{ cms.name }}
+                    </a>
+                </td>
+                <td class="col_edit">
+                    <a href="{{ path('admin_edit_cms', {'cmsId': cms.cmsId}) }}">Edit</a>
+                </td>
+                <td class="col_delete">
+                    <a href="{{ path('admin_delete_cms', {'cmsId': cms.cmsId}) }}">Delete</a>
+                </td>
+            </tr>
+        {%  endfor %}
+    </tbody>
+</table>
 
 {% endblock %}

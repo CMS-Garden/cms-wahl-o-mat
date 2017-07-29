@@ -1,3 +1,46 @@
-<p>
-    Details about CMS {{ cms }}
-</p>
+{% extends "base.html.twig" %}
+
+{% block title %}Manage CMS - CMS Garden CMS Compass {%  endblock %}
+
+{% block body %}
+
+    <h1>Details about CMS {{ name }}</h1>
+
+    <h2>General data</h2>
+
+    <dl>
+        <dt>Name</dt>
+        <dd>{{ name }}</dd>
+        <dt>Homepage</dt>
+        <dd><a href="{{ homepage }}">{{ homepage }}</a></dd>
+        <dt>Description</dt>
+        <dd>{{ description}}</dd>
+    </dl>
+
+    <h2>Features</h2>
+
+    <a href="{{ path('admin_add_new_cms_feature', {'cmsId': cmsId}) }}">Add feature</a>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Title</th>
+                <th>Value</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for feature in features %}
+                <tr>
+                    <td>{{ feature.feature.name }}</td>
+                    <td>{{ feature.feature.title.en }}</td>
+                    <td>{{ feature.value }}</td>
+                    <td>
+                        <a href="{{ path('admin_edit_cms_feature', {'cmsId': cmsId, 'featureId': feature.cmsFeatureId}) }}">Edit</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

@@ -20,6 +20,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Entity class for the available Feature.s
@@ -58,11 +59,19 @@ class Feature
      *
      */
     private $description;
+    
+    /**
+     * @ORM\OneToMany(targetEntity="CmsFeature",mappedBy="feature")
+     * 
+     * @var type 
+     */
+    private $cmsWithFeature;
 
     public function __construct()
     {
         $this->title = array();
         $this->description = array();
+        $this->cmsWithFeature = new ArrayCollection();
     }
 
     public function getFeatureId()
@@ -153,4 +162,20 @@ class Feature
         unset($this->description[$language]);
     }
 
+    public function getCmsWithFeature() {
+        return $this->cmsWithFeature;
+    }
+    
+    public function setCmsWithFeature($cmsWithFeature) {
+        $this->cmsWithFeature = $cmsWithFeature;
+    }
+    
+    public function addCmsWithFeature(CmsFeature $cmsWithFeature) {
+        $this->cmsWithFeature->add($cmsWithFeature);
+    }
+    
+    public function removeCmsWithFeature(CmsFeature $cmsWithFeature) {
+        $this->cmsWithFeature->removeElement($cmsWithFeature);
+    }
+    
 }

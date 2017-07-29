@@ -21,6 +21,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Entity class for representing a CMS.
@@ -59,9 +60,19 @@ class CMS
      */
     private $description;
     
+    /**
+     *
+     * @ORM\OneToMany(targetEntity="CmsFeature", mappedBy="cms")
+     * 
+     * @var type 
+     * 
+     */
+    private $features;
+    
     public function __construct() {
         
         $this->description = array();
+        $this->features = new ArrayCollection();
     }
     /**
      * @return the $cmsId
@@ -150,6 +161,22 @@ class CMS
     public function removeDescriptionForLanguage($language)
     {
         unset($this->description[$language]);
+    }
+    
+    public function getFeatures() {
+        return $this->features;
+    }
+    
+    public function setFeatures($features) {
+        $this->features = $features;
+    }
+    
+    public function addFeature(CmsFeature $feature) {
+        $this->features->add($feature);
+    }
+    
+    public function removeFeature(CmsFeature $feature) {
+        $this->features->removeElement($feature);
     }
 }
 

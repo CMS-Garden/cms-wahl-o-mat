@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (C) 2017 CMS Garden e.V.
+ * Copyright (C) 2017 <a href="mailto:jens.pelzetter@googlemail.com">Jens Pelzetter</a>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,25 +17,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace AppBundle\Controller;
+namespace AppBundle\Repository;
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Doctrine\ORM\EntityRepository;
+use AppBundle\Entity\CMS;
 
 /**
- * Controller for the Admin UI.
+ * Description of CmsFeatureRepository
  *
  * @author <a href="mailto:jens.pelzetter@googlemail.com">Jens Pelzetter</a>
  */
-class AdminController extends Controller
+class CmsFeatureRepository extends EntityRepository
 {
 
-    /**
-     * @Route("/admin")
-     */
-    public function showAdmin()
+    public function findFeaturesForCms(CMS $cms)
     {
-        return $this->render('admin/admin.html.twig');
+        $queryBuilder = $this->createQueryBuilder('f');
+        
+        return $queryBuilder
+//                ->select('f')
+//                ->from('CmsFeature f')
+                ->join('f.feature', 'c')
+                ->where($queryBuilder->expr()->eq('f.cms', ':cms'))
+                ->orderBy('c.name')
+                ->setParameter('cms', $cms)
+                ->getQuery()
+                ->getResult();
     }
 
 }

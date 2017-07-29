@@ -20,6 +20,7 @@
 namespace AppBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use AppBundle\Entity\CMS;
 
 /**
  * Description of FeatureRepository
@@ -28,6 +29,25 @@ use Doctrine\ORM\EntityRepository;
  */
 class FeatureRepository extends EntityRepository
 {
+
+    public function findUnusedFeatures(CMS $cms)
+    {
+        $usedFeaturesQueryBuilder = $this->createQueryBuilder('f');
+
+        $usedFeaturesQuery = $usedFeaturesQueryBuilder
+                ->join('f.cmsWithFeature', 'c')
+                ->where($usedFeaturesQueryBuilder->expr()->eq('c.cms', ':cms'))
+                ->setParameter('cms', $cms)
+                ->getQuery();
+
+        $queryBuilder = $this->createQueryBuilder('f');
+
+        return $queryBuilder
+                        ->where(('f.cmsWithFeature IS EMPTY'))
+                        ->orderBy('f.title', 'ASC')
+                        ->getQuery()
+                        ->getResult();
+    }
 
     public function filterFeaturesByTitle($filter)
     {
@@ -43,17 +63,17 @@ class FeatureRepository extends EntityRepository
                         ->getQuery()
                         ->getResult();
     }
-    
-    public function findFeatureByName($name) {
-        
+
+    public function findFeatureByName($name)
+    {
+
         $queryBuilder = $this->createQueryBuilder('f');
-        
+
         return $queryBuilder
-                ->where($queryBuilder->expr()->eq('f.name', ':name'))
-                ->setParameter('name', $name)
-                ->getQuery()
-                ->getOneOrNullResult();
-        
+                        ->where($queryBuilder->expr()->eq('f.name', ':name'))
+                        ->setParameter('name', $name)
+                        ->getQuery()
+                        ->getOneOrNullResult();
     }
 
 }

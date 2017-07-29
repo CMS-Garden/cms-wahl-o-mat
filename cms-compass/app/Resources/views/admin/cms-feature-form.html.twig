@@ -1,0 +1,16 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Edit feature {{ feature.feature.name }} for CMS {{ cms.name }} - CMS Garden CMS Compass {% endblock %}
+
+{% block body %}
+
+    <h1>
+        Edit feature {{ feature.feature.name }} for CMS {{ cms.name }}
+    </h1>
+
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    <a href="{{ path('admin_show_cms_details', {'cmsId': cms.cmsId}) }}">Cancel</a>
+    {{ form_end(form) }}
+
+{% endblock %}
