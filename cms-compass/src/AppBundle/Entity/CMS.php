@@ -155,7 +155,7 @@ class CMS
     
     public function addDescriptionForLanguage($language, $description)
     {
-        $this->title[$language] = $description;
+        $this->description[$language] = $description;
     }
     
     public function removeDescriptionForLanguage($language)

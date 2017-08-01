@@ -63,8 +63,10 @@ class CmsController extends Controller
         $form = $this->createFormBuilder()
                 ->add('name', TextType::class, array('label' => 'Name'))
                 ->add('homepage', TextType::class, array('label' => 'Homepage'))
-                ->add('description', TextareaType::class, array(
-                    'label' => 'Description'))
+                ->add('description_de', TextareaType::class, array(
+                    'label' => 'Description (de)'))
+                ->add('description_en', TextareaType::class, array(
+                    'label' => 'Description (en)'))
                 ->add('create-cms', SubmitType::class, array(
                     'label' => 'Create new CMS'))
                 ->getForm();
@@ -78,7 +80,8 @@ class CmsController extends Controller
             $cms = new CMS();
             $cms->setName($data['name']);
             $cms->setHomepage($data['homepage']);
-            $cms->addDescriptionForLanguage('en', $data['description']);
+            $cms->addDescriptionForLanguage('de', $data['description_de']);
+            $cms->addDescriptionForLanguage('en', $data['description_en']);
 
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($cms);
@@ -113,8 +116,11 @@ class CmsController extends Controller
                 ->add('homepage', TextType::class, array(
                     'label' => 'Homepage',
                     'data' => $cms->getHomepage()))
-                ->add('description', TextareaType::class, array(
-                    'label' => 'Description',
+                ->add('description_de', TextareaType::class, array(
+                    'label' => 'Description (de)',
+                    'data' => $cms->getDescriptionForLanguage('de')))
+                ->add('description_en', TextareaType::class, array(
+                    'label' => 'Description (en)',
                     'data' => $cms->getDescriptionForLanguage('en')))
                 ->add('update-cms', SubmitType::class, array('label' => 'Save'))
                 ->getForm();
@@ -127,7 +133,8 @@ class CmsController extends Controller
 
             $cms->setName($data['name']);
             $cms->setHomepage($data['homepage']);
-            $cms->addDescriptionForLanguage('en', $data['description']);
+            $cms->addDescriptionForLanguage('de', $data['description_de']);
+            $cms->addDescriptionForLanguage('en', $data['description_en']);
 
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->merge($cms);
