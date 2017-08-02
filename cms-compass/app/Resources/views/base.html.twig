@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
         {% block stylesheets %}
-            
+
             {% stylesheets 'assets/css/*' filter='scssphp' output='cms-compass.css' 
                 "assets/scss/cms-compass.scss"
                 "assets/css/base.css"
@@ -16,12 +16,24 @@
     </head>
     <body>
         <header>
-            CMS Garden CMS Compass
+            <a href="{{ path('admin_home')}}">
+                <!-- the image is pure decroration therefore no alt text is needed -->
+                <img src="{{ asset('assets/images/cms-garden-logo.png')}}" 
+                     alt=""
+                     role="presentation"/>
+                <span class="a11y-hidden">Back to Admin dashboard</span>
+            </a>
         </header>
+        <nav>
+            {% block nav %}
+            {%endblock %}
+            
+            
+        </nav>
         <main>
-            {% block body %}{% endblock %}
+            {% block body %}
+            {% endblock %}
         </main>
-        {% block javascripts %}{% endblock %}
-    </body>
+    {% block javascripts %}{% endblock %}
+</body>
 </html>
- 

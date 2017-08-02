@@ -1,19 +1,119 @@
+$color_cmsg_green: #6da112;
+$color_cmsg_grey: #3f3f40;
+$color_cmsg_blue_dark: #0c5998;
+$color_cmsg_blue_light: #0a91cc;
+$color_cmsg_red: #b50521;
+$color_cmsg_yellow: #f18600;
+
+$background_nav: #222;
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+.a11y-hidden {
+    width: 1px;
+    height: 1px;
+
+    position: absolute;
+    top: -10px;
+
+    overflow: hidden;
+}
+
 header {
 
-    background-color: #0f0;
+    background-image: url('/assets/images/cmsg-tapete.png');
+
+    height: 130px;
+    padding: 15px;
 }
 
-form {
+nav {
 
-    label, button {
-        display: block;
+    background-color: $color_cmsg_grey;
 
-        margin-top: 0.6em;
+    border-bottom: 0.5em solid $color_cmsg_green;
+
+    font-size: 1.1em;
+
+    padding: 0.2em 0.1em;
+
+    ul {
+        list-style: none;
+
+        li {
+            display: inline-block;
+
+            a {
+                color: $color_cmsg_yellow;
+
+                margin-left: 1em;
+                margin-right: 1em;
+
+                &:link {
+                    color: $color_cmsg_yellow;
+
+                    text-decoration: none;
+                }
+
+                &:focus, &:hover {
+                    color: $color_cmsg_yellow;
+
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
+
+}
+
+main {
+
+    margin-left: auto;
+    margin-right: auto;
+
+    padding: 1em 2em;
+
+
+    form {
+
+        &.table-filter-form {
+            label, input, button {
+                display: inline-block;
+            }
+        }
+        
+        button {
+            background-color: $color_cmsg_green;
+            color: #fff;
+            
+            border-radius: 1em;
+            
+            font-size: 1em;
+            font-weight: bold;
+            
+            height: 2em;
+            
+            padding: 0.4em 0.8em;
+        }
+        
+        label, button {
+            display: block;
+
+            margin-top: 0.6em;
+        }
+    }
+
+    table {
+        tr, td {
+            border: 1px solid #000;
+        }
     }
 }
 
-table {
-    tr, td {
-        border: 1px solid #000;
-    }
-}

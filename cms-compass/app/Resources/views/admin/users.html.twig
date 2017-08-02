@@ -2,6 +2,10 @@
 
 {% block title %}Manage users - CMS Garden CMS Compass {% endblock %}
 
+{% block nav %}
+    {% include('admin/nav-links.html.twig') %}
+{% endblock %}
+
 {% block body %}
 
     <h1>All users</h1>
@@ -14,7 +18,7 @@
         <input type="text" name="filter" id="filter" value="{{ userFilter }}">
         <button>Filter users</button>
     </form>
-    <p>Filter is {{ userFilter }}</p>
+    <!--<p>Filter is {{ userFilter }}</p>-->
     <table>
         <thead>
             <tr>

@@ -31,7 +31,7 @@ class AdminController extends Controller
 {
 
     /**
-     * @Route("/admin")
+     * @Route("/admin", name="admin_home")
      */
     public function showAdmin()
     {
