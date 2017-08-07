@@ -3,7 +3,7 @@
 {% block title %}Manage users - CMS Garden CMS Compass {% endblock %}
 
 {% block nav %}
-    {% include('admin/nav-links.html.twig') %}
+    {{ include('admin/nav-links.html.twig', {active: 'users'}) }}
 {% endblock %}
 
 {% block body %}

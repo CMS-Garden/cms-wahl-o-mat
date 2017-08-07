@@ -2,6 +2,11 @@
 
 {% block title %}Manage features - CMS Garden CMS Compass {% endblock %}
 
+{% block nav %}
+    {{ include('admin/nav-links.html.twig', {active: 'features'}) }}
+{% endblock %}
+
+
 {% block body %}
 
     <h1>All features</h1>

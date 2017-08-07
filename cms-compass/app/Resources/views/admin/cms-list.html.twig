@@ -2,6 +2,10 @@
 
 {% block title %}Manage CMS - CMS Garden CMS Compass {%  endblock %}
 
+{% block nav %}
+    {{ include('admin/nav-links.html.twig', {active: 'cms'}) }}
+{% endblock %}
+
 {% block body %}
 
     <h1>All CMS</h1>
