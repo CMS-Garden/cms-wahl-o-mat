@@ -19,15 +19,19 @@
 
 namespace AppBundle\Controller\Admin;
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use AppBundle\Entity\User;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Swift_Mailer;
+use Swift_Message;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use function random_bytes;
 
 /**
  * Description of UsersController
@@ -58,7 +62,7 @@ class UsersController extends Controller
     /**
      * @Route("/admin/users/new", name="admin_create_new_user")
      */
-    public function newUserAction(Request $request, UserPasswordEncoderInterface $encoder, \Swift_Mailer $mailer)
+    public function newUserAction(Request $request, UserPasswordEncoderInterface $encoder, Swift_Mailer $mailer)
     {
 
         $form = $this->createFormBuilder()
@@ -89,7 +93,7 @@ class UsersController extends Controller
             $entityManager->persist($user);
             $entityManager->flush();
 
-            $message = (new \Swift_Message('Your user account for the CMS Garden CMS Compass'))
+            $message = (new Swift_Message('Your user account for the CMS Garden CMS Compass'))
                     ->setFrom('tech@cms-garden.org')
                     ->setTo($user->getEmail())
                     ->setBody(
@@ -145,8 +149,8 @@ class UsersController extends Controller
                 'data' => false !== array_search($role, $user->getRoles())
             ));
         }
-
-        $formBuilder->add('update-user', SubmitType::class, array('label' => 'Save'));
+       
+        $formBuilder->add('update_user', SubmitType::class, array('label' => 'Save'));
         $form = $formBuilder->getForm();
 
         $form->handleRequest($request);

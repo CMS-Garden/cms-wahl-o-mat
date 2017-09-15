@@ -1,4 +1,10 @@
 <ul>
+    <li id="home" {% if active == 'home' %}class="active"{% endif %}>
+        <a href="{{ path('admin_home') }}">
+            <span class="fa fa-home" aria-hidden="true"></span>
+            <span class="a11y-hidden">Home</span>
+        </a>
+    </li>
     <li {% if active == 'users' %}class="active"{% endif %}>
         <a href="{{ path('admin_list_users') }}">Users</a>
     </li>

@@ -3,7 +3,7 @@
 {% block title %}Administration - CMS Garden CMS Compass {% endblock %}
 
 {% block nav %}
-    {% include('admin/nav-links.html.twig') %}
+    {{ include('admin/nav-links.html.twig', {active: 'home'}) }}
 {% endblock %}
 
 {% block body %}
