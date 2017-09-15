@@ -17,16 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace AppBundle\Entity;
+namespace AppBundle\Repository;
 
-use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\EntityRepository;
 
 /**
- * 
- * @ORM\Table(name = "feature_property_definitions")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\PropertyDefinitionRepository")
+ * Description of PropertyRepository
+ *
+ * @author <a href="mailto:jens.pelzetter@googlemail.com">Jens Pelzetter</a>
  */
-class FeaturePropertyDefinition extends PropertyDefinition
+class PropertyRepository extends EntityRepository
 {
     
 }

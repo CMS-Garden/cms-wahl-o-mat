@@ -17,9 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 namespace AppBundle\Entity;
-    
+
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 
@@ -28,20 +27,21 @@ use Doctrine\Common\Collections\ArrayCollection;
  * 
  * @author <a href="mailto:jens.pelzetter@googlemail.com">Jens Pelzetter</a>
  */
+
 /**
  * @ORM\Table(name="cms")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\CmsRepository")
  */
 class CMS
 {
-    
+
     /**
      * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $cmsId;
-    
+
     /**
      * @ORM\Column(type="string", length=256, unique=true)
      *
@@ -51,29 +51,28 @@ class CMS
     /**
      * @ORM\Column(type="string", length=2048, unique=true)
      *
-     */    
+     */
     private $homepage;
-    
+
     /**
      * @ORM\Column(type="array")
      *
      */
     private $description;
-    
+
     /**
-     *
-     * @ORM\OneToMany(targetEntity="CmsFeature", mappedBy="cms")
-     * 
-     * @var type 
-     * 
+     * @ORM\OneToMany(targetEntity="Property", mappedBy="cms")
      */
-    private $features;
-    
-    public function __construct() {
-        
+    private $properties;
+
+    public function __construct()
+    {
+
         $this->description = array();
         $this->features = new ArrayCollection();
+        $this->properties = new ArrayCollection();
     }
+
     /**
      * @return the $cmsId
      */
@@ -138,45 +137,46 @@ class CMS
         $this->description = $description;
     }
 
-    
     public function getDescriptionForLanguage($language)
-    {     
+    {
         if ($this->hasDescriptionForLanguage($language)) {
             return $this->description[$language];
         } else {
             return null;
         }
     }
-    
+
     public function hasDescriptionForLanguage($language)
     {
         return array_key_exists($language, $this->description);
     }
-    
+
     public function addDescriptionForLanguage($language, $description)
     {
         $this->description[$language] = $description;
     }
-    
+
     public function removeDescriptionForLanguage($language)
     {
         unset($this->description[$language]);
     }
-    
-    public function getFeatures() {
-        return $this->features;
+
+    public function getProperties()
+    {
+        return $this->properties;
     }
-    
-    public function setFeatures($features) {
-        $this->features = $features;
+
+    public function setProperties($properties)
+    {
+        $this->properties = $properties;
     }
-    
-    public function addFeature(CmsFeature $feature) {
-        $this->features->add($feature);
+
+    public function addProperty(Property $property)
+    {
+        $this->properties->add($property);
     }
-    
-    public function removeFeature(CmsFeature $feature) {
-        $this->features->removeElement($feature);
+
+    public function removeProperty(Property $property) {
+        $this->properties->remove($property);
     }
 }
-

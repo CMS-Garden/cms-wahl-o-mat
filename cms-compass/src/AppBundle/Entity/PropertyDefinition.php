@@ -20,6 +20,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Description of Property
@@ -33,7 +34,7 @@ class PropertyDefinition
 {
 
     /**
-     * @ORM\Column(type="integer", name="property_id")
+     * @ORM\Column(type="integer", name="property_definition_id")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
@@ -63,10 +64,16 @@ class PropertyDefinition
      */
     private $required;
 
+    /**
+     * @ORM\OneToMany(targetEntity="Property", mappedBy="propertyDefinition")
+     */
+    private $properties;
+
     public function __construct()
     {
         $this->title = array();
         $this->description = array();
+        $this->properties = new ArrayCollection();
     }
 
     public function getPropertyId()
@@ -160,6 +167,26 @@ class PropertyDefinition
     public function removeDescriptionForLanguage($language)
     {
         unset($this->title[$language]);
+    }
+
+    public function getProperties()
+    {
+        return $this->properties;
+    }
+
+    public function setProperties($properties)
+    {
+        $this->properties = $properties;
+    }
+
+    public function addProperty(Property $property)
+    {
+        $this->properties->add($property);
+    }
+
+    public function removeProperty(Property $property)
+    {
+        $this->properties->removeElement($property);
     }
 
 }

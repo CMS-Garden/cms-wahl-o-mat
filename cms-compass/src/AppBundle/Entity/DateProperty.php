@@ -22,58 +22,29 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
+ * Description of DateProperty
+ *
+ * @author <a href="mailto:jens.pelzetter@googlemail.com">Jens Pelzetter</a>
  * 
- * @ORM\Table(name = "integer_property_definitions")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\PropertyDefinitionRepository")
+ * @ORM\Table(name="date_properties")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\PropertyRepository")
  */
-class IntegerPropertyDefinition extends PropertyDefinition
+class DateProperty extends Property
 {
-    /**
-     *
-     * @Column(type="string")
-     */
-    private $unit;
     
     /**
-     *
-     * @Column(type="integer")
+     * @ORM\Column(type="date");
      */
-    private $maxium;
-    
-    /**
-     *
-     * @Column(type="integer")
-     */
-    private $mininum;
-    
-    public function getUnit()
+    private $value;
+            
+    public function getValue()
     {
-        return $this->unit;
+        return $this->value;
     }
 
-    public function getMaxium()
+    public function setValue($value)
     {
-        return $this->maxium;
-    }
-
-    public function getMininum()
-    {
-        return $this->mininum;
-    }
-
-    public function setUnit($unit)
-    {
-        $this->unit = $unit;
-    }
-
-    public function setMaxium($maxium)
-    {
-        $this->maxium = $maxium;
-    }
-
-    public function setMininum($mininum)
-    {
-        $this->mininum = $mininum;
+        $this->value = $value;
     }
 
 

@@ -22,58 +22,36 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
+ * Description of FeatureProperty
+ *
+ * @author <a href="mailto:jens.pelzetter@googlemail.com">Jens Pelzetter</a>
  * 
- * @ORM\Table(name = "integer_property_definitions")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\PropertyDefinitionRepository")
+ * @ORM\Table(name="feature_properties")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\PropertyRepository")
  */
-class IntegerPropertyDefinition extends PropertyDefinition
+class FeatureProperty extends Property
 {
-    /**
-     *
-     * @Column(type="string")
-     */
-    private $unit;
+    const PERMITTED_VALUES = ["yes", "no", "plugin", "commerical", "n/a"];
     
     /**
-     *
-     * @Column(type="integer")
+     * @ORM\Column(type="string")
      */
-    private $maxium;
+    private $value;
     
-    /**
-     *
-     * @Column(type="integer")
-     */
-    private $mininum;
-    
-    public function getUnit()
+    public function getValue()
     {
-        return $this->unit;
+        return $this->value;
     }
 
-    public function getMaxium()
+    public function setValue($value)
     {
-        return $this->maxium;
-    }
-
-    public function getMininum()
-    {
-        return $this->mininum;
-    }
-
-    public function setUnit($unit)
-    {
-        $this->unit = $unit;
-    }
-
-    public function setMaxium($maxium)
-    {
-        $this->maxium = $maxium;
-    }
-
-    public function setMininum($mininum)
-    {
-        $this->mininum = $mininum;
+        if (!in_array($value, PERMITTED_VALUES)) {
+            throw new InvalidArgumentException(
+                    "The value of a FeatureProperty can only one these: " 
+                    . implode(", ", PERMITTED_VALUES));
+        }
+        
+        $this->value = $value;
     }
 
 

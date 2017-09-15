@@ -33,12 +33,12 @@ class EnumPropertyDefinition
      * @ORM\Column(name="permitted_values", type="array")
      */
     private $permittedValues;
-   
+
     /**
      * @ORM\Column(name = "multiple_values", type="boolean")
      */
     private $multipleValues;
-    
+
     public function __construct()
     {
         $this->permittedValues = array();
@@ -54,16 +54,18 @@ class EnumPropertyDefinition
         $this->permittedValues = $permittedValues;
     }
 
-
-    public function addPermittedValue($permittedValue) {
-     array_push($this->permittedValues, $permittedValue);
+    public function addPermittedValue($permittedValue)
+    {
+        array_push($this->permittedValues, $permittedValue);
     }
-    
-    public function removePermittedValue($permittedValue) {
-        foreach($this->permittedValues as $key => $value) {
+
+    public function removePermittedValue($permittedValue)
+    {
+        foreach ($this->permittedValues as $key => $value) {
             if ($value === $permittedValue) {
                 unset($this->permittedValues[$key]);
             }
         }
     }
+
 }

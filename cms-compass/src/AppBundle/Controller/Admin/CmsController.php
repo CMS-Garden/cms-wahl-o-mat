@@ -20,10 +20,7 @@
 namespace AppBundle\Controller\Admin;
 
 use AppBundle\Entity\CMS;
-use AppBundle\Entity\CmsFeature;
-use AppBundle\Entity\Feature;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -177,7 +174,7 @@ class CmsController extends Controller
     public function showCmsDetails($cmsId)
     {
         $cmsRepo = $this->getDoctrine()->getRepository(CMS::class);
-        $cmsFeaturesRepo = $this->getDoctrine()->getRepository(CmsFeature::class);
+//        $cmsFeaturesRepo = $this->getDoctrine()->getRepository(CmsFeature::class);
         $cms = $cmsRepo->find($cmsId);
 
         if (!$cms) {
@@ -195,138 +192,138 @@ class CmsController extends Controller
         ));
     }
 
-    /**
-     * @Route("/admin/cms/{cmsId}/features/new", name="admin_add_new_cms_feature")
-     */
-    public function addCmsFeature(Request $request, $cmsId)
-    {
+//    /**
+//     * @Route("/admin/cms/{cmsId}/features/new", name="admin_add_new_cms_feature")
+//     */
+//    public function addCmsFeature(Request $request, $cmsId)
+//    {
+//
+//
+//        $cmsRepo = $this->getDoctrine()->getRepository(CMS::class);
+//        $featuresRepo = $this->getDoctrine()->getRepository(Feature::class);
+//        $cms = $cmsRepo->find($cmsId);
+//
+//        if (!$cms) {
+//            throw $this->createNotFoundException('No CMS with ID ' . $cmsId);
+//        }
+//
+//        $features = $featuresRepo->findUnusedFeatures($cms);
+//
+//        $featureChoices = array();
+//        foreach ($features as $feature) {
+//            $featureChoices[$feature->getName()] = $feature->getFeatureId();
+//        }
+//
+//        $form = $this->createFormBuilder()
+//                ->add('feature', ChoiceType::class, array(
+//                    'label' => 'Feature',
+//                    'expanded' => false,
+//                    'multiple' => false,
+//                    'choices' => $featureChoices))
+//                ->add('value', ChoiceType::class, array(
+//                    'label' => 'Value',
+//                    'expanded' => true,
+//                    'multiple' => false,
+//                    'choices' => array(
+//                        'yes' => 'Yes',
+//                        'no' => 'No',
+//                        'plugin' => 'Plugin',
+//                        'commerical' => 'Commerical Plugin',
+//                        'n/a' => 'N/A')))
+//                ->add('save', SubmitType::class, array('label' => 'Save'))
+//                ->getForm();
+//
+//        $form->handleRequest($request);
+//
+//        if ($form->isSubmitted() && $form->isValid()) {
+//
+//            $data = $form->getData();
+//
+//            $feature = $featuresRepo->find($data['feature']);
+//            if (!$feature) {
+//                throw $this->createNotFoundException('No CmsFeature with ID '
+//                        . $data['feature']);
+//            }
+//
+//            $cmsFeature = new CmsFeature();
+//            $cmsFeature->setCms($cms);
+//            $cmsFeature->setFeature($feature);
+//            $cmsFeature->setValue($data['value']);
+//
+//
+//            $entityManager = $this->getDoctrine()->getManager();
+//            $entityManager->persist($cmsFeature);
+//            $entityManager->flush();
+//
+//            return $this->redirectToRoute('admin_show_cms_details', array('cmsId' => $cms->getCmsId()));
+//        }
+//
+//        return $this->render('admin/cms-add-feature-form.html.twig', array(
+//                    'form' => $form->createView(),
+//                    'cms' => $cms,
+//                    'feature' => $feature
+//        ));
+//    }
 
-
-        $cmsRepo = $this->getDoctrine()->getRepository(CMS::class);
-        $featuresRepo = $this->getDoctrine()->getRepository(Feature::class);
-        $cms = $cmsRepo->find($cmsId);
-
-        if (!$cms) {
-            throw $this->createNotFoundException('No CMS with ID ' . $cmsId);
-        }
-
-        $features = $featuresRepo->findUnusedFeatures($cms);
-
-        $featureChoices = array();
-        foreach ($features as $feature) {
-            $featureChoices[$feature->getName()] = $feature->getFeatureId();
-        }
-
-        $form = $this->createFormBuilder()
-                ->add('feature', ChoiceType::class, array(
-                    'label' => 'Feature',
-                    'expanded' => false,
-                    'multiple' => false,
-                    'choices' => $featureChoices))
-                ->add('value', ChoiceType::class, array(
-                    'label' => 'Value',
-                    'expanded' => true,
-                    'multiple' => false,
-                    'choices' => array(
-                        'yes' => 'Yes',
-                        'no' => 'No',
-                        'plugin' => 'Plugin',
-                        'commerical' => 'Commerical Plugin',
-                        'n/a' => 'N/A')))
-                ->add('save', SubmitType::class, array('label' => 'Save'))
-                ->getForm();
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-
-            $data = $form->getData();
-
-            $feature = $featuresRepo->find($data['feature']);
-            if (!$feature) {
-                throw $this->createNotFoundException('No CmsFeature with ID '
-                        . $data['feature']);
-            }
-
-            $cmsFeature = new CmsFeature();
-            $cmsFeature->setCms($cms);
-            $cmsFeature->setFeature($feature);
-            $cmsFeature->setValue($data['value']);
-
-
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($cmsFeature);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('admin_show_cms_details', array('cmsId' => $cms->getCmsId()));
-        }
-
-        return $this->render('admin/cms-add-feature-form.html.twig', array(
-                    'form' => $form->createView(),
-                    'cms' => $cms,
-                    'feature' => $feature
-        ));
-    }
-
-    /**
-     * 
-     * @Route("/admin/cms/{cmsId}/features/{featureId}", name="admin_edit_cms_feature")
-     * 
-     * @param type $featureId
-     */
-    public function editCmsFeature(Request $request, $cmsId, $featureId)
-    {
-
-        $cmsRepo = $this->getDoctrine()->getRepository(CMS::class);
-        $cmsFeaturesRepo = $this->getDoctrine()->getRepository(CmsFeature::class);
-        $cms = $cmsRepo->find($cmsId);
-
-        if (!$cms) {
-            throw $this->createNotFoundException('No CMS with ID ' . $cmsId);
-        }
-
-        $feature = $cmsFeaturesRepo->find($featureId);
-
-        if (!$feature) {
-            throw $this->createNotFoundException('No CmsFeature with ID '
-                    . $featureId);
-        }
-
-        $form = $this->createFormBuilder()
-                ->add('value', ChoiceType::class, array(
-                    'label' => 'Value',
-                    'expanded' => true,
-                    'multiple' => false,
-                    'data' => $feature->getValue(),
-                    'choices' => array(
-                        'yes' => 'Yes',
-                        'no' => 'No',
-                        'plugin' => 'Plugin',
-                        'commerical' => 'Commerical Plugin',
-                        'n/a' => 'N/A')))
-                ->add('save', SubmitType::class, array('label' => 'Save'))
-                ->getForm();
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-
-            $data = $form->getData();
-
-            $feature->setValue($data['value']);
-
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->merge($feature);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('admin_show_cms_details', array('cmsId' => $cms->getCmsId()));
-        }
-
-        return $this->render('admin/cms-feature-form.html.twig', array(
-                    'form' => $form->createView(),
-                    'cms' => $cms,
-                    'feature' => $feature
-        ));
-    }
+//    /**
+//     * 
+//     * @Route("/admin/cms/{cmsId}/features/{featureId}", name="admin_edit_cms_feature")
+//     * 
+//     * @param type $featureId
+//     */
+//    public function editCmsFeature(Request $request, $cmsId, $featureId)
+//    {
+//
+//        $cmsRepo = $this->getDoctrine()->getRepository(CMS::class);
+//        $cmsFeaturesRepo = $this->getDoctrine()->getRepository(CmsFeature::class);
+//        $cms = $cmsRepo->find($cmsId);
+//
+//        if (!$cms) {
+//            throw $this->createNotFoundException('No CMS with ID ' . $cmsId);
+//        }
+//
+//        $feature = $cmsFeaturesRepo->find($featureId);
+//
+//        if (!$feature) {
+//            throw $this->createNotFoundException('No CmsFeature with ID '
+//                    . $featureId);
+//        }
+//
+//        $form = $this->createFormBuilder()
+//                ->add('value', ChoiceType::class, array(
+//                    'label' => 'Value',
+//                    'expanded' => true,
+//                    'multiple' => false,
+//                    'data' => $feature->getValue(),
+//                    'choices' => array(
+//                        'yes' => 'Yes',
+//                        'no' => 'No',
+//                        'plugin' => 'Plugin',
+//                        'commerical' => 'Commerical Plugin',
+//                        'n/a' => 'N/A')))
+//                ->add('save', SubmitType::class, array('label' => 'Save'))
+//                ->getForm();
+//
+//        $form->handleRequest($request);
+//
+//        if ($form->isSubmitted() && $form->isValid()) {
+//
+//            $data = $form->getData();
+//
+//            $feature->setValue($data['value']);
+//
+//            $entityManager = $this->getDoctrine()->getManager();
+//            $entityManager->merge($feature);
+//            $entityManager->flush();
+//
+//            return $this->redirectToRoute('admin_show_cms_details', array('cmsId' => $cms->getCmsId()));
+//        }
+//
+//        return $this->render('admin/cms-feature-form.html.twig', array(
+//                    'form' => $form->createView(),
+//                    'cms' => $cms,
+//                    'feature' => $feature
+//        ));
+//    }
 
 }

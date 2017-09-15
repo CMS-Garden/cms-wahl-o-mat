@@ -22,58 +22,35 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
+ * Description of EnumProperty
+ *
+ * @author <a href="mailto:jens.pelzetter@googlemail.com">Jens Pelzetter</a>
  * 
- * @ORM\Table(name = "integer_property_definitions")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\PropertyDefinitionRepository")
+ * @ORM\Table(name="enum_properties")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\PropertyRepository")
  */
-class IntegerPropertyDefinition extends PropertyDefinition
+class EnumProperty extends Property
 {
     /**
-     *
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
-    private $unit;
+    private $value;
     
-    /**
-     *
-     * @Column(type="integer")
-     */
-    private $maxium;
-    
-    /**
-     *
-     * @Column(type="integer")
-     */
-    private $mininum;
-    
-    public function getUnit()
+    public function getValue()
     {
-        return $this->unit;
+        return $this->value;
     }
 
-    public function getMaxium()
+    public function setValue($value)
     {
-        return $this->maxium;
-    }
-
-    public function getMininum()
-    {
-        return $this->mininum;
-    }
-
-    public function setUnit($unit)
-    {
-        $this->unit = $unit;
-    }
-
-    public function setMaxium($maxium)
-    {
-        $this->maxium = $maxium;
-    }
-
-    public function setMininum($mininum)
-    {
-        $this->mininum = $mininum;
+        $permittedValues = $this->getPropertyDefinition()->getPermittedValues();
+        if (!in_array($value, $permittedValues)) {
+            throw new InvalidArgumentException('The value ' . $value . 'is not '
+                    . 'a permitted value. Permitted values are: ' 
+                    . implode(', ', $permittedValues));
+        }
+        
+        $this->value = $value;
     }
 
 

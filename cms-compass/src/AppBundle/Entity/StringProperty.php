@@ -22,59 +22,35 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
+ * Description of StringProperty
+ *
+ * @author <a href="mailto:jens.pelzetter@googlemail.com">Jens Pelzetter</a>
  * 
- * @ORM\Table(name = "integer_property_definitions")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\PropertyDefinitionRepository")
+ * @ORM\Table(name = "string_properties")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\PropertyRepository")
  */
-class IntegerPropertyDefinition extends PropertyDefinition
+class StringProperty extends Property
 {
+
     /**
-     *
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
-    private $unit;
-    
-    /**
-     *
-     * @Column(type="integer")
-     */
-    private $maxium;
-    
-    /**
-     *
-     * @Column(type="integer")
-     */
-    private $mininum;
-    
-    public function getUnit()
+    private $value;
+
+    public function getValue()
     {
-        return $this->unit;
+        return $this->value;
     }
 
-    public function getMaxium()
+    public function setValue($value)
     {
-        return $this->maxium;
-    }
+        if (strlen($value) > $this->getPropertyDefinition()->getMaxLength()) {
+            throw new InvalidArgumentException("The provided string is longer "
+            . "than" . $this->getPropertyDefinition()->getMaxLength()
+            . " characters." );
+        }
 
-    public function getMininum()
-    {
-        return $this->mininum;
+        $this->value = $value;
     }
-
-    public function setUnit($unit)
-    {
-        $this->unit = $unit;
-    }
-
-    public function setMaxium($maxium)
-    {
-        $this->maxium = $maxium;
-    }
-
-    public function setMininum($mininum)
-    {
-        $this->mininum = $mininum;
-    }
-
 
 }
