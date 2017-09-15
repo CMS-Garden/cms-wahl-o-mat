@@ -27,7 +27,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @author <a href="mailto:jens.pelzetter@googlemail.com">Jens Pelzetter</a>
  * 
  * @ORM\Table(name = "integer_properties")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\PropertyRepository)
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\PropertyRepository")
  */
 class IntegerProperty extends Property
 {

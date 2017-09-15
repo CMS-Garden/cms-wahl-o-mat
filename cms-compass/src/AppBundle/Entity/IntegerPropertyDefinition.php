@@ -30,19 +30,19 @@ class IntegerPropertyDefinition extends PropertyDefinition
 {
     /**
      *
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     private $unit;
     
     /**
      *
-     * @Column(type="integer")
+     * @ORM\Column(type="integer")
      */
     private $maxium;
     
     /**
      *
-     * @Column(type="integer")
+     * @ORM\Column(type="integer")
      */
     private $mininum;
     

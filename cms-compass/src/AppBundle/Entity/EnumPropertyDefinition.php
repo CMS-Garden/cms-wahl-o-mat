@@ -26,7 +26,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name = "enum_property_definitions")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\PropertyDefinitionRepository")
  */
-class EnumPropertyDefinition
+class EnumPropertyDefinition extends PropertyDefinition
 {
 
     /**

@@ -41,14 +41,14 @@ class Property
     private $propertyId;
 
     /**
-     * @ORM\ManyToOn(targetEntity="PropertyDefinition")
+     * @ORM\ManyToOne(targetEntity="PropertyDefinition", inversedBy="properties")
      * @ORM\JoinColumn(name="definition_id", referencedColumnName="property_definition_id")
      * 
      */
     private $propertyDefinition;
 
     /**
-     * @ORM\ManyToOne(targetEntity="CMS")
+     * @ORM\ManyToOne(targetEntity="CMS", inversedBy="properties")
      * @ORM\JoinColumn(name="cms_id", referencedColumnName="cms_id")
      * 
      */
