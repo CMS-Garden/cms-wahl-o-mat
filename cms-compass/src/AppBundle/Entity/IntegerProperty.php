@@ -42,7 +42,7 @@ class IntegerProperty extends Property
     public function setValue($value)
     {
         $minValue = $this->getPropertyDefinition()->getMinimum();
-        $maxValue = $this->getPropertyDefinition()->getMaxium();
+        $maxValue = $this->getPropertyDefinition()->getMaximum();
         
         
         if($minValue !== null && $value < $minValue) {

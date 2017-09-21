@@ -1,0 +1,55 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Manage property definitions - CMS Garden CMS Compass {% endblock %}
+
+{% block nav %}
+    {{ include('admin/nav-links-html.twig', {active: 'property-definitions'}) }}
+{% endblock %}
+
+{% block body %}
+
+    <h1>All property definitions</h1>
+
+    <a href="">Add new property definition</a>
+    <form action="{{ path('admin_list_property_defintions') }}"
+          method="GET"
+          class="table-filter-form">
+        <label for="filter">Filter property definitions</label>
+        <input type="text" name="filter" id="filter" value="{{ filter }}" />
+        <button>Filter property definitions</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th id="col_property_def_name_header">Name</th>
+                <th id="col_property_def_title_header">Title</th>
+                <th id="col_property_def_required_header">Required?</th>
+                <th id="col_property_def_type_header">Type</th>
+                <th id="col_actions_header">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for definition in definitions %}
+                <tr>
+                    <td class="col_property_def_name">{{ definition.name }}</td>
+                    <td class="col_property_def_title">{{ definition.title['en']}}</td>
+                    <td class="col_property_def_required">
+                        {% if definition.required %}
+                            Yes
+                        {% else %}
+                            No
+                        {% endif %}
+                    </td>
+                    <td class="col_property_def_type">
+                        {{ definition.typename }}
+                    </td>
+                    <td class="col_property_def_actions">
+                        ToDo
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

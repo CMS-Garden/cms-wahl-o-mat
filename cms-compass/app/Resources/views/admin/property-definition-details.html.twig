@@ -1,0 +1,97 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Details of property definition "{{ definition.name }}" - CMS Garden CMS Compass {% endblock %}
+
+{% block body %}
+
+    <h1>
+        Details about property definition <em>{{ definition.name }}</em>
+    </h1>
+
+    <a href="#">Edit</a> <!-- Gleicher View, nur über Parameter Formular? -->
+    <dl>
+        <dt>Name</dt>
+        <dd>{{definition.name}}</dd>
+
+        <dt>Title</dt>
+        <dd>
+            <dl>
+                <dt>de</dt>
+                <dd>{{definition.title['de']}}</dd>
+                <dt>en</dt>
+                <dd>{{definition.title['en']}}</dd>
+            </dl>
+        </dd>
+        <dt>Required?</dt>
+        <dd>
+            {% if definition.required %}
+                Yes
+            {% else %}
+                No
+            {% endif %}
+        </dd>
+        <dt>Description</dt>
+        <dd>
+            <dl>
+                <dt>de</dt>
+                <dd>
+                    {{definition.description['de']}}
+                </dd>
+                <dt>en</dt>
+                <dd>
+                    {{definition.description['en']}}
+                </dd>
+            </dl>
+        </dd>
+
+        {% if definition.typename == 'enum' %}
+            <dt>Multiple Values?</dt>
+            <dd>
+                {% if definition.multipleValues %}
+                    Yes
+                {% else %} 
+                    No
+                {% endif %}
+            </dd>
+            <dt>Permitted Values</dt>
+            <dd>
+                <div>
+                    <a href="#">Add value</a>
+                    <!-- Eventuell direkt hier eine Form? -->
+                </div>
+                <table>
+                    <tr>
+                        <th>Value</th>
+                        <th>Remove</th>
+                    </tr>
+                    {% for value in definition.permittedValues %}
+                        <tr>
+                            <td>{{value}}</td>
+                            <td>Delete</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </dd>
+        {% elseif definition.typename == 'Integer' %}
+            <dt>Unit</dt>
+            <dd>{{ definition.unit }}</dd>
+            <dt>Minimum</dt>
+            <dd>{{ definiton.minimum }}</dd>
+            <dt>Maximum</dt>
+            <dd>{{ definition.maximum }}</dd>
+        {% elseif definition.typename == 'String' %}
+            <dt>Maximum lenght</dt>
+            <dd>{{ definition.maxLength }}</dd>
+            <dt>HTML permitted</dt>
+            <dd>
+                {% if definition.htmlPermitted %}
+                    Yes
+                {% else %}
+                    No
+                {% endif %}
+            </dd>
+        {% endif %}
+    </dl>
+    <a href="#">Edit</a> <!-- Gleicher View, nur über Parameter Formular? -->
+
+{% endblock %}

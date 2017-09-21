@@ -27,5 +27,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class DatePropertyDefinition extends PropertyDefinition
 {
-    //put your code here
+    public function getTypeName()
+    {
+        return "Date";
+    }
 }

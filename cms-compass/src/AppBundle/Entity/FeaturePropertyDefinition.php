@@ -28,5 +28,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class FeaturePropertyDefinition extends PropertyDefinition
 {
-    
+    public function getTypeName()
+    {
+        return "Feature";
+    }
 }

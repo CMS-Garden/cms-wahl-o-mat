@@ -41,8 +41,14 @@ class EnumPropertyDefinition extends PropertyDefinition
 
     public function __construct()
     {
+        parent::__construct();
         $this->permittedValues = array();
     }
+
+    public function getTypeName() {
+        return "Enum";
+    }
+
 
     public function getPermittedValues()
     {

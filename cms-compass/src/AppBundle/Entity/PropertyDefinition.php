@@ -30,7 +30,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  * @ORM\Table(name = "property_definitions")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\PropertyDefinitionRepository")
  */
-class PropertyDefinition
+abstract class PropertyDefinition
 {
 
     /**
@@ -76,6 +76,8 @@ class PropertyDefinition
         $this->properties = new ArrayCollection();
     }
 
+    abstract public function getTypeName();
+    
     public function getPropertyId()
     {
         return $this->propertyId;

@@ -29,6 +29,11 @@ use Doctrine\ORM\Mapping as ORM;
 class StringPropertyDefinition extends PropertyDefinition
 {
 
+    public function getTypeName()
+    {
+        return "String";
+    }
+    
     /**
      * @ORM\Column(type="integer", name="max_length")
      */

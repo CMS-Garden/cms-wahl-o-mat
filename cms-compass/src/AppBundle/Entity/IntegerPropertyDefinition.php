@@ -38,7 +38,18 @@ class IntegerPropertyDefinition extends PropertyDefinition
      *
      * @ORM\Column(type="integer")
      */
-    private $maxium;
+    private $minimum;
+    
+    /**
+     *
+     * @ORM\Column(type="integer")
+     */
+    private $maximum;
+    
+    public function getTypeName()
+    {
+        return "Integer";
+    }
     
     /**
      *
@@ -51,12 +62,12 @@ class IntegerPropertyDefinition extends PropertyDefinition
         return $this->unit;
     }
 
-    public function getMaxium()
+    public function getMaximum()
     {
-        return $this->maxium;
+        return $this->maximum;
     }
 
-    public function getMininum()
+    public function getMinimum()
     {
         return $this->mininum;
     }
@@ -66,14 +77,14 @@ class IntegerPropertyDefinition extends PropertyDefinition
         $this->unit = $unit;
     }
 
-    public function setMaxium($maxium)
+    public function setMaximum($maxium)
     {
-        $this->maxium = $maxium;
+        $this->maximum = $maxium;
     }
 
-    public function setMininum($mininum)
+    public function setMinimum($mininum)
     {
-        $this->mininum = $mininum;
+        $this->minimum = $mininum;
     }
 
 
