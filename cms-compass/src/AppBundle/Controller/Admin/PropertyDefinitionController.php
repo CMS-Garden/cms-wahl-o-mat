@@ -236,20 +236,61 @@ class PropertyDefinitionController extends Controller
      */
     public function addEnumPropertyValue(Request $request, $propertyDefName)
     {
-        //ToDo
+        $form = $this->createFormBuilder()
+                ->add('value', TextType::class, array('label' => 'New value'))
+                ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->valid()) {
+            $propertyDefRepo = $this->getDoctrine()->getRepository(PropertyDefinition::class);
+            $propertyDef = $propertyDefRepo->find($propertyDefName);
+
+            if (!$propertyDef) {
+                throw $this->createNotFoundException(
+                        'No property definition with name ' . $propertyDefName);
+            }
+
+            $data = $form->getData();
+
+            $propertyDef->addPermittedValue($data['value']);
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->merge($propertyDef);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('admin_property_definition_details', array('definitionName' => $propertyDef->getName()));
+        }
+
+        return $this->render('admin/enumproperty-definition-add-value-form.html.twig', array(
+                    'form' => $form->createView()
+        ));
     }
 
     /**
      * 
-     * @Route("/admin/property-definitions/{propertyDefName}/enumvalues/remove", name="admin_edit_property_definition_remove_enumvalue")
+     * @Route("/admin/property-definitions/{propertyDefName}/enumvalues/remove/{value}", name="admin_edit_property_definition_remove_enumvalue")
      * 
      * @param Request $request
      * @param type $propertyDefName
      * 
      */
-    public function removeEnumPropertyValue(Request $request, $propertyDefName)
+    public function removeEnumPropertyValue(Request $request, $propertyDefName, $value)
     {
-        //ToDo
+        $propertyDefRepo = $this->getDoctrine()->getRepository(PropertyDefinition::class);
+        $propertyDef = $propertyDefRepo->find($propertyDefName);
+
+        if (!$propertyDef) {
+            throw $this->createNotFoundException(
+                    'No property definition with name ' . $propertyDefName);
+        }
+
+        $propertyDef->removePermittedValue($value);
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->merge($propertyDef);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('admin_property_definition_details', array('definitionName' => $propertyDef->getName()));
     }
 
 }
