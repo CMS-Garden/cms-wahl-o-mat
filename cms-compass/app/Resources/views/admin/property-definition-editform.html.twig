@@ -1,0 +1,16 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Edit property definition - CMS Garden CMS Compass {% endblock %}
+
+{% block body %}
+
+    <h1>
+        Edit property definition {{propertyDef.name}}
+    </h1>
+    
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    <a href="{{ path('admin_list_property_definitions') }}">Cancel</a>
+    {{ form_end(form) }}
+    
+{% endblock %}

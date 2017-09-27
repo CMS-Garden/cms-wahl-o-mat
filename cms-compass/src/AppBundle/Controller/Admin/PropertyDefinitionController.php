@@ -23,11 +23,12 @@ use AppBundle\Entity\DatePropertyDefinition;
 use AppBundle\Entity\EnumPropertyDefinition;
 use AppBundle\Entity\FeaturePropertyDefinition;
 use AppBundle\Entity\IntegerPropertyDefinition;
+use AppBundle\Entity\PropertyDefinition;
 use AppBundle\Entity\StringPropertyDefinition;
-use AppBundle\Repository\PropertyRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
@@ -55,7 +56,7 @@ class PropertyDefinitionController extends Controller
         $definitions = $repository->filterPropertyDefinitionsByName($filter);
 
         return $this->render('admin/property-definitions.html.twig', array(
-                    'filter' => $userFilter,
+                    'filter' => $filter,
                     'definitions' => $definitions
         ));
     }
@@ -80,7 +81,9 @@ class PropertyDefinitionController extends Controller
                 ->add('title_en', TextType::class, array('label' => 'Title (en)'))
                 ->add('description_de', TextareaType::class, array('label' => 'Description (de)'))
                 ->add('description_en', TextareaType::class, array('label' => 'Description (en)'))
-                ->add('required', CheckboxType::class, array('label' => 'Required?'));
+                ->add('required', CheckboxType::class, array('label' => 'Required?'))
+                ->add('createPropertyDef', SubmitType::class, array('label' => 'Create'))
+                ->getForm();
 
 
         $form->handleRequest($request);
@@ -90,7 +93,7 @@ class PropertyDefinitionController extends Controller
             $data = $form->getData();
 
             $propertyDef = null;
-            switch ($type) {
+            switch ($data['type']) {
                 case 'date':
                     $propertyDef = new DatePropertyDefinition();
                     break;
@@ -134,10 +137,11 @@ class PropertyDefinitionController extends Controller
      * @param Request $request
      * @param type $propertyDefName
      */
-    public function deletePropertyDefinition(Request $request, $propertyDefName) {
+    public function deletePropertyDefinition(Request $request, $propertyDefName)
+    {
         //ToDo
     }
-    
+
     /**
      * @Route("/admin/property-definitions/{propertyDefName}", name="admin_show_property_definition")
      * 
@@ -153,9 +157,8 @@ class PropertyDefinitionController extends Controller
         if (!$definition) {
             throw $this->createNotFoundException('No property definition with name ' . $propertyDefName);
         }
-        
-        return $this->render('admin/property-definition-details.html.twig',
-                array('definition' => $definition));
+
+        return $this->render('admin/property-definition-details.html.twig', array('definition' => $definition));
     }
 
     /**
@@ -164,10 +167,65 @@ class PropertyDefinitionController extends Controller
      * @param Request $request
      * @param type $propertyDefName
      */
-    public function editPropertyDefinition(Request $request, $propertyDefName) {
-        // ToDo
+    public function editPropertyDefinition(Request $request, $propertyDefName)
+    {
+        $propertyDefRepo = $this->getDoctrine()->getRepository(PropertyDefinition::class);
+        $propertyDef = $propertyDefRepo->find($propertyDefName);
+
+        if (!$propertyDef) {
+            throw $this->createNotFoundException(
+                    'No property definition with name ' . $propertyDefName);
+        }
+
+        $form = $this->createFormBuilder()
+                ->add('name', TextType::class, array(
+                    'label' => 'Name',
+                    'data' => $propertyDef->getName()))
+                ->add('title_de', TextType::class, array(
+                    'label' => 'Title (de)',
+                    'data' => $propertyDef->getLabelForLanguage('de')))
+                ->add('title_en', TextType::class, array(
+                    'label' => 'Title (en)',
+                    'data' => $propertyDef->getLabelForLanguage('en')))
+                ->add('description_de', TextareaType::class, array(
+                    'label' => 'Description (de)',
+                    'data' => $propertyDef->getDescriptionForLanguage('de')))
+                ->add('description_en', TextareaType::class, array(
+                    'label' => 'Description (en)',
+                    'data' => $propertyDef->getDescriptionForLanguage('en')))
+                ->add('required', CheckboxType::class, array(
+                    'label' => 'Required?',
+                    'data' => $propertyDef->isRequired()))
+                ->add('createPropertyDef', SubmitType::class, array(
+                    'label' => 'Save'))
+                ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->valid()) {
+
+            $data = $form->getData();
+
+            $propertyDef->setName($data['name']);
+            $propertyDef->addTitleForLanguage('de', $data['title_de']);
+            $propertyDef->addTitleForLanguage('en', $data['title_en']);
+            $propertyDef->addDescriptionForLanguage('de', $data['description_de']);
+            $propertyDef->addDescriptionForLanguage('en', $data['description_en']);
+            $propertyDef->setRequired($data['required']);
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->merge($propertyDef);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('admin_property_definition_details', array('definitionName' => $propertyDef->getName()));
+        }
+
+        return $this->render('admin/property-definition-editform.html.twig', array(
+                    'form' => $form->createView(),
+                    'propertyDef' => $propertyDef
+        ));
     }
-    
+
     /**
      * 
      * @Route("/admin/property-definitions/{propertyDefName}/enumvalues/add", name="admin_edit_property_definition_add_enumvalue")
@@ -176,10 +234,11 @@ class PropertyDefinitionController extends Controller
      * @param type $propertyDefName
      * 
      */
-    public function addEnumPropertyValue(Request $request, $propertyDefName) {
+    public function addEnumPropertyValue(Request $request, $propertyDefName)
+    {
         //ToDo
     }
-    
+
     /**
      * 
      * @Route("/admin/property-definitions/{propertyDefName}/enumvalues/remove", name="admin_edit_property_definition_remove_enumvalue")
@@ -188,9 +247,9 @@ class PropertyDefinitionController extends Controller
      * @param type $propertyDefName
      * 
      */
-    public function removeEnumPropertyValue(Request $request, $propertyDefName) {
+    public function removeEnumPropertyValue(Request $request, $propertyDefName)
+    {
         //ToDo
     }
-    
-    
+
 }

@@ -98,7 +98,6 @@ class CmsController extends Controller
      */
     public function editCms(Request $request, $cmsId)
     {
-
         $cmsRepo = $this->getDoctrine()->getRepository(CMS::class);
         $cms = $cmsRepo->find($cmsId);
 
