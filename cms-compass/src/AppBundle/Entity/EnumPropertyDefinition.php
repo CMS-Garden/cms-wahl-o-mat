@@ -73,5 +73,17 @@ class EnumPropertyDefinition extends PropertyDefinition
             }
         }
     }
+    
+    public function getMultipleValues()
+    {
+        return $this->multipleValues;
+    }
+
+    public function setMultipleValues($multipleValues)
+    {
+        $this->multipleValues = $multipleValues;
+    }
+
+
 
 }

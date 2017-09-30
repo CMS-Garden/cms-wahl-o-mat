@@ -35,7 +35,7 @@ class StringPropertyDefinition extends PropertyDefinition
     }
     
     /**
-     * @ORM\Column(type="integer", name="max_length")
+     * @ORM\Column(type="integer", name="max_length", nullable=true)
      */
     private $maxLength;
 

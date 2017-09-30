@@ -8,7 +8,11 @@
         Details about property definition <em>{{ definition.name }}</em>
     </h1>
 
-    <a href="#">Edit</a> <!-- Gleicher View, nur über Parameter Formular? -->
+    <a href="{{ path('admin_list_property_definitions') }}">Back to list of property definitons</a>
+
+    <a href="{{ path('admin_edit_property_definition', {'propertyDefName': definition.name } )}}">
+        Edit
+    </a> 
     <dl>
         <dt>Name</dt>
         <dd>{{definition.name}}</dd>
@@ -44,7 +48,7 @@
             </dl>
         </dd>
 
-        {% if definition.typename == 'enum' %}
+        {% if definition.typename == 'Enum' %}
             <dt>Multiple Values?</dt>
             <dd>
                 {% if definition.multipleValues %}
@@ -56,7 +60,9 @@
             <dt>Permitted Values</dt>
             <dd>
                 <div>
-                    <a href="#">Add value</a>
+                    <a href="{{ path('admin_edit_property_definition_add_enumvalue', {propertyDefName: definition.name}) }}">
+                        Add value
+                    </a>
                     <!-- Eventuell direkt hier eine Form? -->
                 </div>
                 <table>
@@ -67,7 +73,11 @@
                     {% for value in definition.permittedValues %}
                         <tr>
                             <td>{{value}}</td>
-                            <td>Delete</td>
+                            <td>
+                                <a href="{{ path('admin_edit_property_definition_remove_enumvalue', { 'propertyDefName': definition.name, 'value': value }) }}">
+                                    Remove
+                                </a>
+                            </td>
                         </tr>
                     {% endfor %}
                 </table>
@@ -76,7 +86,7 @@
             <dt>Unit</dt>
             <dd>{{ definition.unit }}</dd>
             <dt>Minimum</dt>
-            <dd>{{ definiton.minimum }}</dd>
+            <dd>{{ definition.minimum }}</dd>
             <dt>Maximum</dt>
             <dd>{{ definition.maximum }}</dd>
         {% elseif definition.typename == 'String' %}
@@ -92,6 +102,9 @@
             </dd>
         {% endif %}
     </dl>
-    <a href="#">Edit</a> <!-- Gleicher View, nur über Parameter Formular? -->
+    
+    <a href="{{ path('admin_edit_property_definition', {'propertyDefName': definition.name } )}}">
+        Edit
+    </a> 
 
 {% endblock %}

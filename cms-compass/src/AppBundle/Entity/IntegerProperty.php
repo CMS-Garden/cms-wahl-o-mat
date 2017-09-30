@@ -47,7 +47,7 @@ class IntegerProperty extends Property
         
         if($minValue !== null && $value < $minValue) {
             throw new InvalidArgumentException("The provided value " 
-                    . $value . "is smaller than the mininum value " 
+                    . $value . "is smaller than the minimum value " 
                     . $minValue . "set in the definition of this property.");
         } 
         

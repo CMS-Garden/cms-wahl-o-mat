@@ -27,7 +27,7 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author <a href="mailto:jens.pelzetter@googlemail.com">Jens Pelzetter</a>
  */
-class PorpertyDefinitionRepository extends EntityRepository
+class PropertyDefinitionRepository extends EntityRepository
 {
     
     public function findPropertyDefinitionByName($name) 
@@ -39,6 +39,18 @@ class PorpertyDefinitionRepository extends EntityRepository
                 ->setParameter('name', $name)
                 ->getQuery()
                 ->getOneOrNullResult();
+    }
+    
+    public function filterPropertyDefinitionsByName($filter) {
+        
+        $queryBuilder = $this->createQueryBuilder('p');
+        
+        return $queryBuilder
+                ->where($queryBuilder->expr()->like('p.name', ':name'))
+                ->orderBy('p.name', 'ASC')
+                ->setParameter('name', '%' . $filter . '%')
+                ->getQuery()
+                ->getResult();
         
     }
 }

@@ -29,6 +29,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  * 
  * @ORM\Table(name = "property_definitions")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\PropertyDefinitionRepository")
+ * @ORM\InheritanceType("JOINED")
  */
 abstract class PropertyDefinition
 {
@@ -150,7 +151,7 @@ abstract class PropertyDefinition
     public function getDescriptionForLanguage($language)
     {
         if ($this->hasDescriptionForLanguage($language)) {
-            return $this->title[$language];
+            return $this->description[$language];
         } else {
             return null;
         }
@@ -158,17 +159,17 @@ abstract class PropertyDefinition
 
     public function hasDescriptionForLanguage($language)
     {
-        return array_key_exists($language, $this->title);
+        return array_key_exists($language, $this->description);
     }
 
     public function addDescriptionForLanguage($language, $title)
     {
-        $this->title[$language] = $title;
+        $this->description[$language] = $title;
     }
 
     public function removeDescriptionForLanguage($language)
     {
-        unset($this->title[$language]);
+        unset($this->description[$language]);
     }
 
     public function getProperties()

@@ -28,35 +28,30 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class IntegerPropertyDefinition extends PropertyDefinition
 {
+
     /**
      *
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      */
     private $unit;
-    
+
     /**
      *
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $minimum;
-    
+
     /**
      *
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $maximum;
-    
+
     public function getTypeName()
     {
         return "Integer";
     }
-    
-    /**
-     *
-     * @ORM\Column(type="integer")
-     */
-    private $mininum;
-    
+
     public function getUnit()
     {
         return $this->unit;
@@ -69,7 +64,7 @@ class IntegerPropertyDefinition extends PropertyDefinition
 
     public function getMinimum()
     {
-        return $this->mininum;
+        return $this->minimum;
     }
 
     public function setUnit($unit)
@@ -82,10 +77,9 @@ class IntegerPropertyDefinition extends PropertyDefinition
         $this->maximum = $maxium;
     }
 
-    public function setMinimum($mininum)
+    public function setMinimum($minimum)
     {
-        $this->minimum = $mininum;
+        $this->minimum = $minimum;
     }
-
 
 }

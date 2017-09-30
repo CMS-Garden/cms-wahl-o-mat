@@ -3,15 +3,17 @@
 {% block title %}Manage property definitions - CMS Garden CMS Compass {% endblock %}
 
 {% block nav %}
-    {{ include('admin/nav-links-html.twig', {active: 'property-definitions'}) }}
+    {{ include('admin/nav-links.html.twig', {active: 'property-definitions'}) }}
 {% endblock %}
 
 {% block body %}
 
     <h1>All property definitions</h1>
 
-    <a href="">Add new property definition</a>
-    <form action="{{ path('admin_list_property_defintions') }}"
+    <a href="{{ path('admin_create_new_property_definition') }}">
+        Add new property definition
+    </a>
+    <form action="{{ path('admin_list_property_definitions') }}"
           method="GET"
           class="table-filter-form">
         <label for="filter">Filter property definitions</label>
@@ -32,7 +34,9 @@
         <tbody>
             {% for definition in definitions %}
                 <tr>
-                    <td class="col_property_def_name">{{ definition.name }}</td>
+                    <td class="col_property_def_name">
+                        <a href="{{ path('admin_show_property_definition', {'propertyDefName': definition.name }) }}">{{ definition.name }}</a>
+                    </td>
                     <td class="col_property_def_title">{{ definition.title['en']}}</td>
                     <td class="col_property_def_required">
                         {% if definition.required %}
