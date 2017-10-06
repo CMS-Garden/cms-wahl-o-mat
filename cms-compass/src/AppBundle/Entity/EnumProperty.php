@@ -31,27 +31,36 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class EnumProperty extends Property
 {
+
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="array")
      */
-    private $value;
-    
-    public function getValue()
+    private $values;
+
+    public function getValues()
     {
         return $this->value;
     }
 
-    public function setValue($value)
+    public function setValues($value)
+    {
+        $this->value = $value;
+    }
+
+    public function addValue($value)
     {
         $permittedValues = $this->getPropertyDefinition()->getPermittedValues();
         if (!in_array($value, $permittedValues)) {
             throw new InvalidArgumentException('The value ' . $value . 'is not '
-                    . 'a permitted value. Permitted values are: ' 
-                    . implode(', ', $permittedValues));
+            . 'a permitted value. Permitted values are: '
+            . implode(', ', $permittedValues));
         }
         
-        $this->value = $value;
+        array_push($this->values, $value);
     }
-
+    
+    public function removeValue($value) {
+        unset($this->values[$value]);
+    }
 
 }

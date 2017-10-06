@@ -17,26 +17,53 @@
         <dd>{{ description}}</dd>
     </dl>
 
-    <h2>Features</h2>
+    <h2>Properties</h2>
 
-    <a href="{{ path('admin_add_new_cms_feature', {'cmsId': cmsId}) }}">Add feature</a>
+    {% if allRequiredPropertiesSet == false %}
+        <div class="warning">
+            Not all required properties have been set for this CMS. Missing 
+            properties:
+
+            <ul>
+                {% for propertyDef in defsForMissingProperties %}
+                    <li>
+                        {{ propertyDef.name }} {{ propertyDef.title.en }}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    <form action="{{ path('admin_add_new_cms_property', {'cmsId': cmsId}) }}">
+        <select id="property_to_add">
+            {% for propertyDef in unusedPropertyDefs %}
+                <option id="{{ propertyDef.name }}">
+                    {{ propertyDef.title.en }}
+                </option>
+            {% endfor %}
+        </select>
+        <button type="submit">Add</button>
+    </form>
+    <a href="{{ path('admin_add_new_cms_property', {'cmsId': cmsId}) }}">Add property</a>
     <table>
         <thead>
             <tr>
                 <th>Name</th>
                 <th>Title</th>
+                <th>Required</th>
                 <th>Value</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
-            {% for feature in features %}
+            {% for property in properties %}
                 <tr>
-                    <td>{{ feature.feature.name }}</td>
-                    <td>{{ feature.feature.title.en }}</td>
+                    <td>{{ property.propertyDefinition.name }}</td>
+                    <td>{{ property.propertyDefinition.title.en }}</td>
+                    <td>{{ property.propertyDefinition.required }}</td>
                     <td>{{ feature.value }}</td>
                     <td>
-                        <a href="{{ path('admin_edit_cms_feature', {'cmsId': cmsId, 'featureId': feature.cmsFeatureId}) }}">Edit</a>
+                        <a href="{{ path('admin_edit_cms_property', {'cmsId': cmsId, 'featureId': feature.cmsFeatureId}) }}">Edit</a>
                     </td>
                 </tr>
             {% endfor %}

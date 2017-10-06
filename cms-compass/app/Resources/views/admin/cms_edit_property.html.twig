@@ -1,0 +1,24 @@
+{% extends "base.html.twig" %}
+
+{% block title %}
+    {% if createProperty == true %}
+        Add value for property {{ propertyDef.title.en }} to CMS {{ cms.name }}
+    {% else %}
+        Edit value of property {{ propertyDef.title.en }} for CMS {{ cms.name }}
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+    <h1>
+        {% if createProperty == true %}
+            Add value for property {{ propertyDef.title.en }} to CMS {{ cms.name }}
+        {% else %}
+            Edit value of property {{ propertyDef.title.en }} for CMS {{ cms.name }}
+        {% endif %}
+    </h1>
+
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    <a href="{{ path('admin_show_cms_details', {'cmsId': cms.cmsId}) }}">Cancel</a>
+    {{ form_end(form) }}
+{% endblock %}

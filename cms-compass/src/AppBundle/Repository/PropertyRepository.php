@@ -19,6 +19,7 @@
 
 namespace AppBundle\Repository;
 
+use AppBundle\Entity\CMS;
 use Doctrine\ORM\EntityRepository;
 
 /**
@@ -28,5 +29,30 @@ use Doctrine\ORM\EntityRepository;
  */
 class PropertyRepository extends EntityRepository
 {
-    
+
+    public function findPropertiesForCms(CMS $cms)
+    {
+        $queryBuilder = $this->createQueryBuilder('p');
+
+        return $queryBuilder
+                        ->where($queryBuilder->expr()->eq('p.cms', ':cms'))
+                        ->setParameter('cms', $cms)
+                        ->getQuery()
+                        ->getResult();
+    }
+
+    public function findPropertyByPropertyDefinitionName(CMS $cms, $name)
+    {
+        $queryBuilder = $this->createQueryBuilder('p');
+
+        return $queryBuilder
+                        ->where($queryBuilder
+                                ->expr()
+                                ->andX($queryBuilder->expr()->eq('p.cms', ':cms')), $queryBuilder->expr()->eq('p.definition.name', ':name'))
+                        ->setParameter('cms', $cms)
+                        ->setParameter('name', $name)
+                        ->getQuery()
+                        ->getOneOrNullResult();
+    }
+
 }

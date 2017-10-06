@@ -19,6 +19,7 @@
 
 namespace AppBundle\Repository;
 
+use AppBundle\Entity\CMS;
 use Doctrine\ORM\EntityRepository;
 
 
@@ -41,7 +42,8 @@ class PropertyDefinitionRepository extends EntityRepository
                 ->getOneOrNullResult();
     }
     
-    public function filterPropertyDefinitionsByName($filter) {
+    public function filterPropertyDefinitionsByName($filter) 
+            {
         
         $queryBuilder = $this->createQueryBuilder('p');
         
@@ -51,6 +53,30 @@ class PropertyDefinitionRepository extends EntityRepository
                 ->setParameter('name', '%' . $filter . '%')
                 ->getQuery()
                 ->getResult();
+    }
+    
+    public function findDefinitionsForRequiredProperties() 
+            {
+        $queryBuilder = $this->createQueryBuilder('p');
         
+        return $queryBuilder
+                ->where($queryBuilder->expr()->eq('p.required', true))
+                ->getQuery()
+                ->getResult();
+    }
+    
+    public function findUnusedDefinitions(CMS $cms) {
+        
+        $usedDefs = array();
+        foreach($cms->getProperties() as $property) {
+            array_push($usedDefs, $property->getPropertyDefinition());
+        }
+        
+        $queryBuilder = $this->createQueryBuilder('p');
+        
+        return $queryBuilder
+                ->where($queryBuilder->expr()->notIn('p', $usedDefs))
+                ->getQuery()
+                ->getResult();
     }
 }

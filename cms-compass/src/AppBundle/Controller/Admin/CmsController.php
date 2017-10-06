@@ -20,12 +20,23 @@
 namespace AppBundle\Controller\Admin;
 
 use AppBundle\Entity\CMS;
+use AppBundle\Entity\DateProperty;
+use AppBundle\Entity\EnumProperty;
+use AppBundle\Entity\FeatureProperty;
+use AppBundle\Entity\IntegerProperty;
+use AppBundle\Entity\Property;
+use AppBundle\Entity\PropertyDefinition;
+use AppBundle\Entity\StringProperty;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Config\Definition\Exception\Exception;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 
 /**
  * Description of CmsController
@@ -174,21 +185,205 @@ class CmsController extends Controller
     {
         $cmsRepo = $this->getDoctrine()->getRepository(CMS::class);
 //        $cmsFeaturesRepo = $this->getDoctrine()->getRepository(CmsFeature::class);
+        $propertiesRepo = $this->getDoctrine()->getRepository(Property::class);
+        $propertiesDefRepo = $this
+                ->getDoctrine()
+                ->getRepository(PropertyDefinition::class);
         $cms = $cmsRepo->find($cmsId);
 
         if (!$cms) {
             throw $this->createNotFoundException('No CMS with ID ' . $cmsId);
         }
 
-        $features = $cmsFeaturesRepo->findFeaturesForCms($cms);
+        $properties = $propertiesRepo->findPropertiesForCms($cms);
+        $propertyDefs = array();
+        foreach ($properties as $property) {
+            array_push($propertyDefs, $property->getPropertyDefinition());
+        }
+
+        $defsForRequiredProperties = $propertiesDefRepo
+                ->findDefinitionsForRequiredProperties();
+
+        $allRequiredPropertiesSet = false;
+        $defsForMissingProperies = array();
+        foreach ($defsForRequiredProperties as $defForRequiredProperty) {
+
+            if (!in_array($defForRequiredProperty, $propertyDefs)) {
+                $allRequiredPropertiesSet = $allRequiredPropertiesSet && false;
+                array_push($defsForMissingProperies, $defForRequiredProperty);
+            }
+        }
 
         return $this->render('admin/cms-details.html.twig', array(
                     'cmsId' => $cmsId,
                     'name' => $cms->getName(),
                     'homepage' => $cms->getHomepage(),
                     'description' => $cms->getDescriptionForLanguage('en'),
-                    'features' => $features
+                    'properties' => $properties,
+                    'allRequiredPropertiesSet' => $allRequiredPropertiesSet,
+                    'defsForMissingProperties' => $defsForMissingProperies
         ));
+    }
+
+    /**
+     * @Route("/admin/cms/{cmsId}/properties/", name="admin_add_new_cms_property")
+     * 
+     * @param Request $request
+     * @param type $cmsId
+     */
+    public function addProperty(Request $request, $cmsId)
+    {
+
+        $propertyToAdd = $request->get('property_to_add');
+
+
+        return $this->redirectToRoute('admin_edit_cms_property', array(
+                    'cmsId' => $cmsId,
+                    'propertyDefName' => $propertyToAdd
+        ));
+    }
+
+    /**
+     * @Route("/admin/cms/{cmsId}/properties/{propertyDefName}", name="admin_edit_cms_property") 
+     * 
+     * @param Request $request
+     * @param type $cmsId
+     */
+    public function editProperty(Request $request, $cmsId, $propertyDefName)
+    {
+
+        $cmsRepo = $this->getDoctrine()->getRepository(CMS::class);
+        $propertiesRepo = $this->getDoctrine()->getRepository(Property::class);
+        $propertiesDefRepo = $this
+                ->getDoctrine()
+                ->getRepository(PropertyDefinition::class);
+
+        $cms = $cmsRepo->find($cmsId);
+        if (!$cms) {
+            throw $this->createNotFoundException('No CMS with ID ' . $cmsId);
+        }
+
+        $propertyDef = $propertiesDefRepo
+                ->findPropertyDefinitionByName($propertyDefName);
+        if (!propertyDef) {
+            throw $this->createNotFoundException(
+                    'No PropertyDefinition with name ' . $propertyDefName);
+        }
+
+        $property = $propertiesRepo->findPropertyByPropertyDefinitionName(
+                $cms, $propertyDefName);
+        $createProperty = false;
+        if (!$property) {
+
+            $createProperty = true;
+
+            switch ($propertyDef->getTypeName()) {
+                case 'Date':
+                    $property = new DateProperty();
+                    break;
+                case 'Enum':
+                    $property = new EnumProperty();
+                    break;
+                case 'Feature':
+                    $property = new FeatureProperty();
+                    break;
+                case 'Integer':
+                    $property = new IntegerProperty();
+                    break;
+                case 'String':
+                    $property = new StringProperty();
+                    break;
+                default:
+                    throw new Exception('Unknown property type '
+                    . $propertyDef->getTypeName());
+            }
+
+            $property->setPropertyDefinition($propertyDef);
+            $property->setCms($cms);
+            $cms->addProperty($property);
+        }
+
+        $formBuilder = $this->createFormBuilder();
+
+        switch ($propertyDef->getTypeName()) {
+            case 'Date':
+                $formBuilder->add('value', DateType::class, array(
+                    'label' => 'Value',
+                    'data' => $property->getValue()));
+                break;
+            case 'Enum':
+                $formBuilder->add('values', ChoiceType::class, array(
+                    'label' => 'Values(s)',
+                    'choices' => $propertyDef->getPermittedValues(),
+                    'multiple' => $propertyDef->getMultiple(),
+                    'data' => $property->getValues()));
+                break;
+            case 'Feature':
+                $formBuilder->add('value', ChoiceType::class, array(
+                    'label' => 'Value',
+                    'choices' => FeatureProperty::PERMITTED_VALUES,
+                    'multiple' => false,
+                    'data' => $property->getValue()));
+                break;
+            case 'Integer':
+                $formBuilder->add('value', IntegerType::class, array(
+                    'label' => 'Value',
+                    'data' => $property->getValue()));
+                break;
+            case 'String':
+                $formBuilder->add('value', TextareaType::class, array(
+                    'label' => 'Value',
+                    'data' => $property->getValue()));
+                break;
+            default:
+                throw new Exception('Unknown property type '
+                . $propertyDef->getTypeName());
+        }
+
+        $form = $formBuilder->getForm();
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $data = $form->getData();
+
+            switch ($propertyDef->getTypeName()) {
+                case 'Date':
+                    $property->setValue($data['value']);
+                    break;
+                case 'Enum':
+                    $property->setValues($data['values']);
+                    break;
+                case 'Feature':
+                    $property->setValue($data['value']);
+                    break;
+                case 'Integer':
+                    $property->setValue($data['value']);
+                    break;
+                case 'String':
+                    $property->setValue($data['value']);
+                    break;
+            }
+
+            $entityManager = $this->getDoctrine()->getManager();
+            if ($createProperty) {
+                $entityManager->persist($property);
+                $entityManager->merge($cms);
+            } else {
+                $entityManager->merge($property);
+            }
+            $entityManager->flush();
+
+            return $this->redirectToRoute('admin_show_cms_details', array(
+                        'cmsId' => $cmsId));
+        }
+
+        return $this->render('admin/cms_edit_property.html.twig', array(
+                    'form' => $form,
+                    'cms' => $cms,
+                    'propertyDef' => $propertyDef,
+                    'property' => property,
+                    'createProperty' => $createProperty));
     }
 
 //    /**
@@ -263,7 +458,6 @@ class CmsController extends Controller
 //                    'feature' => $feature
 //        ));
 //    }
-
 //    /**
 //     * 
 //     * @Route("/admin/cms/{cmsId}/features/{featureId}", name="admin_edit_cms_feature")
@@ -324,5 +518,4 @@ class CmsController extends Controller
 //                    'feature' => $feature
 //        ));
 //    }
-
 }
