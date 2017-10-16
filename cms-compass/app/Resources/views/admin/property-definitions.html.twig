@@ -10,7 +10,9 @@
 
     <h1>All property definitions</h1>
 
-    <a href="{{ path('admin_create_new_property_definition') }}">
+    <a href="{{ path('admin_create_new_property_definition') }}"
+       class="controllink addlink">
+        <span class="fa fa-plus-circle"></span>
         Add new property definition
     </a>
     <form action="{{ path('admin_list_property_definitions') }}"
@@ -49,7 +51,7 @@
                         {{ definition.typename }}
                     </td>
                     <td class="col_property_def_actions">
-                        ToDo
+                        <a href="{{ path('admin_delete_property_definition', {'propertyDefName': definition.name }) }}" class="controllink deletelink"><span class="fa fa-minus-circle"></span> Delete</a>
                     </td>
                 </tr>
             {% endfor %}

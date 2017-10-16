@@ -138,14 +138,25 @@ class PropertyDefinitionController extends Controller
 
     /**
      * 
-     * @Route("/admin/property-definitions/{propertyDefName}/delete")
+     * @Route("/admin/property-definitions/{propertyDefName}/delete", name="admin_delete_property_definition")
      * 
      * @param Request $request
      * @param type $propertyDefName
      */
-    public function deletePropertyDefinition(Request $request, $propertyDefName)
+    public function deletePropertyDefinition($propertyDefName)
     {
-        //ToDo
+        $repository = $this->getDoctrine()->getRepository(PropertyDefinition::class);
+        $definition = $repository->findPropertyDefinitionByName($propertyDefName);
+
+        if (!$definition) {
+            throw $this->createNotFoundException('No property definition with name ' . $propertyDefName);
+        }
+        
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->remove($definition);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('admin_list_property_definitions');
     }
 
     /**

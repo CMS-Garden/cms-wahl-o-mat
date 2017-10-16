@@ -8,9 +8,14 @@
         Details about property definition <em>{{ definition.name }}</em>
     </h1>
 
-    <a href="{{ path('admin_list_property_definitions') }}">Back to list of property definitons</a>
-
-    <a href="{{ path('admin_edit_property_definition', {'propertyDefName': definition.name } )}}">
+    <a href="{{ path('admin_list_property_definitions') }}"
+       class="backlink">
+        <span class="fa fa-arrow-circle-left"></span>
+        Back to list of property definitons
+    </a>
+        
+    <a href="{{ path('admin_edit_property_definition', {'propertyDefName': definition.name } )}}">        
+        <span class="fa fa-pencil"></span>
         Edit
     </a> 
     <dl>
@@ -61,7 +66,7 @@
             <dd>
                 <div>
                     <a href="{{ path('admin_edit_property_definition_add_enumvalue', {propertyDefName: definition.name}) }}">
-                        Add value
+                        <span class="fa fa-plus-circle"></span> Add value
                     </a>
                     <!-- Eventuell direkt hier eine Form? -->
                 </div>
@@ -75,7 +80,7 @@
                             <td>{{value}}</td>
                             <td>
                                 <a href="{{ path('admin_edit_property_definition_remove_enumvalue', { 'propertyDefName': definition.name, 'value': value }) }}">
-                                    Remove
+                                    <span class="fa fa-minus-circle"></span> Remove
                                 </a>
                             </td>
                         </tr>

@@ -1,9 +1,12 @@
 $color_cmsg_green: #6da112;
+$color_cmsg_green_link: #5e8a1d;
 $color_cmsg_grey: #3f3f40;
 $color_cmsg_blue_dark: #0c5998;
 $color_cmsg_blue_light: #0a91cc;
 $color_cmsg_red: #b50521;
 $color_cmsg_yellow: #f18600;
+
+$color_controllink: $color_cmsg_green_link;
 
 $background_nav: #222;
 
@@ -95,6 +98,59 @@ main {
     padding: 1em 2em;
 
 
+    a {
+        &:link,&:visited {
+            color: $color_controllink;
+
+            text-decoration: none;
+        }
+
+        &:active,&:focus,&:hover {
+            text-decoration: underline;
+        }
+       
+        &.backlink {
+            border-right: 1px solid $color_cmsg_green_link;
+            margin-right: 1em;
+            padding-right: 1em;
+        }
+        
+        &.deletelink {
+            span.fa {
+                color: #f00;
+            }
+        }
+    }
+
+    dl {
+        dt {
+            
+            font-weight: bold;
+        }
+        
+        dd {
+            margin-left: 0em;
+            margin-bottom: 1em;
+            
+            dl {
+                margin-top: 0.5em;
+                margin-left: 0.5em;
+                
+                dd {
+                    margin-bottom: 0.5em;
+                }
+            }
+            
+            div {
+                margin-top: 0.5em;
+            }
+            
+            table {
+                margin-top: 0em;
+            }
+        }
+    }
+    
     form {
 
         &.table-filter-form {
@@ -122,6 +178,11 @@ main {
 
             margin-top: 0.6em;
         }
+        
+        textarea {
+            width: 40em;
+            height: 20em;
+        }
     }
 
     table {
@@ -140,7 +201,7 @@ main {
             padding: 0.3em 0.3em;
         }
     }
-    
+
     span.username {
         font-family: monospace;
     }
