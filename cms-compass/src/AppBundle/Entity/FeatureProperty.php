@@ -45,7 +45,7 @@ class FeatureProperty extends Property
 
     public function setValue($value)
     {
-        if (!in_array($value, PERMITTED_VALUES)) {
+        if (!in_array($value, FeatureProperty::PERMITTED_VALUES)) {
             throw new InvalidArgumentException(
                     "The value of a FeatureProperty can only one these: " 
                     . implode(", ", PERMITTED_VALUES));

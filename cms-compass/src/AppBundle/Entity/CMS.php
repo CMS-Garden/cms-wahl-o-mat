@@ -61,7 +61,7 @@ class CMS
     private $description;
 
     /**
-     * @ORM\OneToMany(targetEntity="Property", mappedBy="cms")
+     * @ORM\OneToMany(targetEntity="Property", mappedBy="cms", orphanRemoval=true, cascade={"remove"})
      */
     private $properties;
 

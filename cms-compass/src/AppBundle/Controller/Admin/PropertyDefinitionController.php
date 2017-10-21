@@ -212,6 +212,7 @@ class PropertyDefinitionController extends Controller
                     'data' => $propertyDef->getDescriptionForLanguage('en')))
                 ->add('required', CheckboxType::class, array(
             'label' => 'Required?',
+                    'required' => false,
             'data' => $propertyDef->getRequired()));
 
         if ($propertyDef->getTypeName() === 'Integer') {

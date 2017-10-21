@@ -19,7 +19,9 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Repository\PropertyRepository;
 use Doctrine\ORM\Mapping as ORM;
+use InvalidArgumentException;
 
 /**
  * Description of StringProperty
@@ -27,7 +29,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @author <a href="mailto:jens.pelzetter@googlemail.com">Jens Pelzetter</a>
  * 
  * @ORM\Table(name = "string_properties")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\PropertyRepository")
+ * @ORM\Entity(repositoryClass="PropertyRepository")
  */
 class StringProperty extends Property
 {
@@ -44,10 +46,11 @@ class StringProperty extends Property
 
     public function setValue($value)
     {
-        if (strlen($value) > $this->getPropertyDefinition()->getMaxLength()) {
+        if ($this->getPropertyDefinition()->getMaxLength() !== null 
+                && strlen($value) > $this->getPropertyDefinition()->getMaxLength()) {
             throw new InvalidArgumentException("The provided string is longer "
             . "than" . $this->getPropertyDefinition()->getMaxLength()
-            . " characters." );
+            . " characters.");
         }
 
         $this->value = $value;

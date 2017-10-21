@@ -22,7 +22,6 @@ namespace AppBundle\Repository;
 use AppBundle\Entity\CMS;
 use Doctrine\ORM\EntityRepository;
 
-
 /**
  * Description of PorpertyDefinitionRepository
  *
@@ -30,53 +29,56 @@ use Doctrine\ORM\EntityRepository;
  */
 class PropertyDefinitionRepository extends EntityRepository
 {
-    
-    public function findPropertyDefinitionByName($name) 
+
+    public function findPropertyDefinitionByName($name)
     {
         $queryBuilder = $this->createQueryBuilder('p');
-        
+
         return $queryBuilder
-                ->where($queryBuilder->expr()->eq('p.name', ':name'))
-                ->setParameter('name', $name)
-                ->getQuery()
-                ->getOneOrNullResult();
+                        ->where($queryBuilder->expr()->eq('p.name', ':name'))
+                        ->setParameter('name', $name)
+                        ->getQuery()
+                        ->getOneOrNullResult();
     }
-    
-    public function filterPropertyDefinitionsByName($filter) 
-            {
-        
+
+    public function filterPropertyDefinitionsByName($filter)
+    {
+
         $queryBuilder = $this->createQueryBuilder('p');
-        
+
         return $queryBuilder
-                ->where($queryBuilder->expr()->like('p.name', ':name'))
-                ->orderBy('p.name', 'ASC')
-                ->setParameter('name', '%' . $filter . '%')
-                ->getQuery()
-                ->getResult();
+                        ->where($queryBuilder->expr()->like('p.name', ':name'))
+                        ->orderBy('p.name', 'ASC')
+                        ->setParameter('name', '%' . $filter . '%')
+                        ->getQuery()
+                        ->getResult();
     }
-    
-    public function findDefinitionsForRequiredProperties() 
-            {
+
+    public function findDefinitionsForRequiredProperties()
+    {
         $queryBuilder = $this->createQueryBuilder('p');
-        
+
         return $queryBuilder
-                ->where($queryBuilder->expr()->eq('p.required', true))
-                ->getQuery()
-                ->getResult();
+                        ->where($queryBuilder->expr()->eq('p.required', ':value'))
+                        ->setParameter('value', true)
+                        ->getQuery()
+                        ->getResult();
     }
-    
-    public function findUnusedDefinitions(CMS $cms) {
-        
+
+    public function findUnusedDefinitions(CMS $cms)
+    {
+
         $usedDefs = array();
-        foreach($cms->getProperties() as $property) {
+        foreach ($cms->getProperties() as $property) {
             array_push($usedDefs, $property->getPropertyDefinition());
         }
-        
+
         $queryBuilder = $this->createQueryBuilder('p');
-        
+
         return $queryBuilder
-                ->where($queryBuilder->expr()->notIn('p', $usedDefs))
-                ->getQuery()
-                ->getResult();
+                        ->where($queryBuilder->expr()->notIn('p', $usedDefs))
+                        ->getQuery()
+                        ->getResult();
     }
+
 }

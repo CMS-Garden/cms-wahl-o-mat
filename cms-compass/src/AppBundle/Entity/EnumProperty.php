@@ -19,6 +19,7 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -37,14 +38,29 @@ class EnumProperty extends Property
      */
     private $values;
 
+    public function getValue()
+    {
+        if ($this->values === null) {
+            return '';
+        } else if($this->values instanceof ArrayCollection) {
+            return implode(', ', $this->values->toArray());
+        } else if(is_array($this->values)) {
+            return implode(', ', $this->values);
+        } else if(is_string($this->values)) {
+            return $this->values;
+        } else {
+            strval($this->values);
+        }
+    }
+
     public function getValues()
     {
-        return $this->value;
+        return $this->values;
     }
 
     public function setValues($value)
     {
-        $this->value = $value;
+        $this->values = $value;
     }
 
     public function addValue($value)
@@ -55,11 +71,12 @@ class EnumProperty extends Property
             . 'a permitted value. Permitted values are: '
             . implode(', ', $permittedValues));
         }
-        
+
         array_push($this->values, $value);
     }
-    
-    public function removeValue($value) {
+
+    public function removeValue($value)
+    {
         unset($this->values[$value]);
     }
 

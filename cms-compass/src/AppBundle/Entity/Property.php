@@ -26,10 +26,11 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @author <a href="mailto:jens.pelzetter@googlemail.com">Jens Pelzetter</a>
  * 
- * @ORM\Table(name="properties")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\PropertyRepository")
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\Table(name="properties")
  */
-class Property
+abstract class Property
 {
 
     /**
@@ -83,5 +84,7 @@ class Property
     {
         $this->cms = $cms;
     }
+    
+    public abstract function getValue();
 
 }

@@ -34,17 +34,19 @@
         </div>
     {% endif %}
 
-    <form action="{{ path('admin_add_new_cms_property', {'cmsId': cmsId}) }}">
-        <select id="property_to_add">
+    <form action="{{ path('admin_add_new_cms_property', {'cmsId': cmsId}) }}"
+          method="POST">
+        <select id="property_to_add" name="property_to_add">
             {% for propertyDef in unusedPropertyDefs %}
-                <option id="{{ propertyDef.name }}">
+                <option id="{{ propertyDef.name }}"
+                        value="{{ propertyDef.name }}">
                     {{ propertyDef.title.en }}
                 </option>
             {% endfor %}
         </select>
         <button type="submit">Add</button>
     </form>
-    <a href="{{ path('admin_add_new_cms_property', {'cmsId': cmsId}) }}">Add property</a>
+    <!--<a href="{{ path('admin_add_new_cms_property', {'cmsId': cmsId}) }}">Add property</a>-->
     <table>
         <thead>
             <tr>
@@ -60,10 +62,16 @@
                 <tr>
                     <td>{{ property.propertyDefinition.name }}</td>
                     <td>{{ property.propertyDefinition.title.en }}</td>
-                    <td>{{ property.propertyDefinition.required }}</td>
-                    <td>{{ feature.value }}</td>
                     <td>
-                        <a href="{{ path('admin_edit_cms_property', {'cmsId': cmsId, 'featureId': feature.cmsFeatureId}) }}">Edit</a>
+                        {% if property.propertyDefinition.required == true %}
+                            true
+                        {% else %}
+                            false
+                        {% endif %}
+                    </td>
+                    <td>{{ property.value }}</td>
+                    <td>
+                        <a href="{{ path('admin_edit_cms_property', {'cmsId': cmsId, 'propertyDefName': property.propertyDefinition.name}) }}">Edit</a>
                     </td>
                 </tr>
             {% endfor %}

@@ -27,6 +27,7 @@ use AppBundle\Entity\IntegerProperty;
 use AppBundle\Entity\Property;
 use AppBundle\Entity\PropertyDefinition;
 use AppBundle\Entity\StringProperty;
+use Doctrine\Common\Collections\ArrayCollection;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Config\Definition\Exception\Exception;
@@ -56,7 +57,8 @@ class CmsController extends Controller
         $cmsRepo = $this->getDoctrine()->getRepository(CMS::class);
         $cmsList = $cmsRepo->filterCmsByName($cmsFilter);
 
-        return $this->render('admin/cms-list.html.twig', array(
+        return $this->render('admin/cms-list.html.twig',
+                             array(
                     'cmsFilter' => $cmsFilter,
                     'cmsList' => $cmsList
         ));
@@ -71,11 +73,14 @@ class CmsController extends Controller
         $form = $this->createFormBuilder()
                 ->add('name', TextType::class, array('label' => 'Name'))
                 ->add('homepage', TextType::class, array('label' => 'Homepage'))
-                ->add('description_de', TextareaType::class, array(
+                ->add('description_de', TextareaType::class,
+                      array(
                     'label' => 'Description (de)'))
-                ->add('description_en', TextareaType::class, array(
+                ->add('description_en', TextareaType::class,
+                      array(
                     'label' => 'Description (en)'))
-                ->add('create-cms', SubmitType::class, array(
+                ->add('create-cms', SubmitType::class,
+                      array(
                     'label' => 'Create new CMS'))
                 ->getForm();
 
@@ -98,7 +103,8 @@ class CmsController extends Controller
             return $this->redirectToRoute('admin_list_cms');
         }
 
-        return $this->render('admin/cms-form.html.twig', array(
+        return $this->render('admin/cms-form.html.twig',
+                             array(
                     'form' => $form->createView(),
                     'newCms' => true
         ));
@@ -117,16 +123,20 @@ class CmsController extends Controller
         }
 
         $form = $this->createFormBuilder()
-                ->add('name', TextType::class, array(
+                ->add('name', TextType::class,
+                      array(
                     'label' => 'Name',
                     'data' => $cms->getName()))
-                ->add('homepage', TextType::class, array(
+                ->add('homepage', TextType::class,
+                      array(
                     'label' => 'Homepage',
                     'data' => $cms->getHomepage()))
-                ->add('description_de', TextareaType::class, array(
+                ->add('description_de', TextareaType::class,
+                      array(
                     'label' => 'Description (de)',
                     'data' => $cms->getDescriptionForLanguage('de')))
-                ->add('description_en', TextareaType::class, array(
+                ->add('description_en', TextareaType::class,
+                      array(
                     'label' => 'Description (en)',
                     'data' => $cms->getDescriptionForLanguage('en')))
                 ->add('update-cms', SubmitType::class, array('label' => 'Save'))
@@ -150,7 +160,8 @@ class CmsController extends Controller
             return $this->redirectToRoute('admin_list_cms');
         }
 
-        return $this->render('admin/cms-form.html.twig', array(
+        return $this->render('admin/cms-form.html.twig',
+                             array(
                     'form' => $form->createView(),
                     'cms' => $cms,
                     'newCms' => false
@@ -204,7 +215,7 @@ class CmsController extends Controller
         $defsForRequiredProperties = $propertiesDefRepo
                 ->findDefinitionsForRequiredProperties();
 
-        $allRequiredPropertiesSet = false;
+        $allRequiredPropertiesSet = true;
         $defsForMissingProperies = array();
         foreach ($defsForRequiredProperties as $defForRequiredProperty) {
 
@@ -214,14 +225,31 @@ class CmsController extends Controller
             }
         }
 
-        return $this->render('admin/cms-details.html.twig', array(
+        $availablePropertyDefs = $propertiesDefRepo->findAll();
+
+        $unusedPropertyDefs = array();
+        foreach ($availablePropertyDefs as $propertyDef) {
+
+            if (!in_array($propertyDef, $propertyDefs)) {
+                array_push($unusedPropertyDefs, $propertyDef);
+            }
+        }
+
+        uasort($unusedPropertyDefs,
+               function($a, $b) {
+            return strcmp($a->getTitle()['en'], $b->getTitle()['en']);
+        });
+
+        return $this->render('admin/cms-details.html.twig',
+                             array(
                     'cmsId' => $cmsId,
                     'name' => $cms->getName(),
                     'homepage' => $cms->getHomepage(),
                     'description' => $cms->getDescriptionForLanguage('en'),
                     'properties' => $properties,
                     'allRequiredPropertiesSet' => $allRequiredPropertiesSet,
-                    'defsForMissingProperties' => $defsForMissingProperies
+                    'defsForMissingProperties' => $defsForMissingProperies,
+                    'unusedPropertyDefs' => $unusedPropertyDefs
         ));
     }
 
@@ -233,11 +261,12 @@ class CmsController extends Controller
      */
     public function addProperty(Request $request, $cmsId)
     {
-
         $propertyToAdd = $request->get('property_to_add');
 
+        echo $propertyToAdd;
 
-        return $this->redirectToRoute('admin_edit_cms_property', array(
+        return $this->redirectToRoute('admin_edit_cms_property',
+                                      array(
                     'cmsId' => $cmsId,
                     'propertyDefName' => $propertyToAdd
         ));
@@ -265,7 +294,7 @@ class CmsController extends Controller
 
         $propertyDef = $propertiesDefRepo
                 ->findPropertyDefinitionByName($propertyDefName);
-        if (!propertyDef) {
+        if (!$propertyDef) {
             throw $this->createNotFoundException(
                     'No PropertyDefinition with name ' . $propertyDefName);
         }
@@ -307,37 +336,75 @@ class CmsController extends Controller
 
         switch ($propertyDef->getTypeName()) {
             case 'Date':
-                $formBuilder->add('value', DateType::class, array(
+                $formBuilder->add('value', DateType::class,
+                                  array(
                     'label' => 'Value',
                     'data' => $property->getValue()));
                 break;
             case 'Enum':
-                $formBuilder->add('values', ChoiceType::class, array(
+                $permittedValues = array();
+                foreach ($propertyDef->getPermittedValues() as $value) {
+                    $permittedValues[$value] = $value;
+                }
+                $values = array();
+                if ($property->getValues() instanceof ArrayCollection) {
+                    $values = $property->getValues()->toArray();
+                }
+                else if (is_array($property->getValues())) {
+                    $values = $property->getValues();
+                }
+                else {
+                    array_push($values, $property->getValues());
+                }
+                if(!$propertyDef->getMultipleValues()
+                        && count($values) >= 1) {
+                    $values = $values[0];
+                }
+                $formBuilder->add('values', ChoiceType::class,
+                                  array(
                     'label' => 'Values(s)',
-                    'choices' => $propertyDef->getPermittedValues(),
-                    'multiple' => $propertyDef->getMultiple(),
-                    'data' => $property->getValues()));
+                    'choices' => $permittedValues,
+                    'multiple' => $propertyDef->getMultipleValues(),
+                    'data' => $values));
                 break;
             case 'Feature':
-                $formBuilder->add('value', ChoiceType::class, array(
+                $permittedValues = array();
+                foreach (FeatureProperty::PERMITTED_VALUES as $value) {
+                    $permittedValues[$value] = $value;
+                }
+                $formBuilder->add('value', ChoiceType::class,
+                                  array(
                     'label' => 'Value',
-                    'choices' => FeatureProperty::PERMITTED_VALUES,
+                    'choices' => $permittedValues,
                     'multiple' => false,
                     'data' => $property->getValue()));
                 break;
             case 'Integer':
-                $formBuilder->add('value', IntegerType::class, array(
+                $formBuilder->add('value', IntegerType::class,
+                                  array(
                     'label' => 'Value',
                     'data' => $property->getValue()));
                 break;
             case 'String':
-                $formBuilder->add('value', TextareaType::class, array(
+                $formBuilder->add('value', TextareaType::class,
+                                  array(
                     'label' => 'Value',
                     'data' => $property->getValue()));
                 break;
             default:
                 throw new Exception('Unknown property type '
                 . $propertyDef->getTypeName());
+        }
+
+        if ($createProperty) {
+            $formBuilder->add('add_property', SubmitType::class,
+                              array(
+                'label' => 'Add property'));
+        }
+        else {
+            $formBuilder->add('add_property', SubmitType::class,
+                              array(
+                'label' => 'Save property'));
         }
 
         $form = $formBuilder->getForm();
@@ -369,20 +436,23 @@ class CmsController extends Controller
             if ($createProperty) {
                 $entityManager->persist($property);
                 $entityManager->merge($cms);
-            } else {
+            }
+            else {
                 $entityManager->merge($property);
             }
             $entityManager->flush();
 
-            return $this->redirectToRoute('admin_show_cms_details', array(
+            return $this->redirectToRoute('admin_show_cms_details',
+                                          array(
                         'cmsId' => $cmsId));
         }
 
-        return $this->render('admin/cms_edit_property.html.twig', array(
-                    'form' => $form,
+        return $this->render('admin/cms_edit_property.html.twig',
+                             array(
+                    'form' => $form->createView(),
                     'cms' => $cms,
                     'propertyDef' => $propertyDef,
-                    'property' => property,
+                    'property' => $property,
                     'createProperty' => $createProperty));
     }
 

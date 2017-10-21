@@ -31,12 +31,12 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class DateProperty extends Property
 {
-    
+
     /**
      * @ORM\Column(type="date");
      */
     private $value;
-            
+
     public function getValue()
     {
         return $this->value;

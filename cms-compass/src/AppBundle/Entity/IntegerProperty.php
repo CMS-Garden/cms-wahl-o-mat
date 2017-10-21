@@ -19,7 +19,9 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Repository\PropertyRepository;
 use Doctrine\ORM\Mapping as ORM;
+use InvalidArgumentException;
 
 /**
  * Description of IntegerProperty
@@ -27,11 +29,15 @@ use Doctrine\ORM\Mapping as ORM;
  * @author <a href="mailto:jens.pelzetter@googlemail.com">Jens Pelzetter</a>
  * 
  * @ORM\Table(name = "integer_properties")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\PropertyRepository")
+ * @ORM\Entity(repositoryClass="PropertyRepository")
  */
 class IntegerProperty extends Property
 {
     
+    /**
+     *
+     *  @ORM\Column(type="integer")
+     */
     private $value;
     
     public function getValue()

@@ -19,12 +19,13 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Repository\PropertyDefinitionRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * 
  * @ORM\Table(name = "string_property_definitions")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\PropertyDefinitionRepository")
+ * @ORM\Entity(repositoryClass="PropertyDefinitionRepository")
  */
 class StringPropertyDefinition extends PropertyDefinition
 {

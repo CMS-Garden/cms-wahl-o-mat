@@ -35,8 +35,10 @@ class PropertyRepository extends EntityRepository
         $queryBuilder = $this->createQueryBuilder('p');
 
         return $queryBuilder
+                        ->join('p.propertyDefinition', 'd')
                         ->where($queryBuilder->expr()->eq('p.cms', ':cms'))
                         ->setParameter('cms', $cms)
+                        ->orderBy('d.name')
                         ->getQuery()
                         ->getResult();
     }
@@ -46,9 +48,12 @@ class PropertyRepository extends EntityRepository
         $queryBuilder = $this->createQueryBuilder('p');
 
         return $queryBuilder
+                        ->join('p.propertyDefinition', 'd')
                         ->where($queryBuilder
                                 ->expr()
-                                ->andX($queryBuilder->expr()->eq('p.cms', ':cms')), $queryBuilder->expr()->eq('p.definition.name', ':name'))
+                                ->andX($queryBuilder->expr()->eq('p.cms', ':cms')),
+                                                                 $queryBuilder->expr()->eq('d.name',
+                                                                                           ':name'))
                         ->setParameter('cms', $cms)
                         ->setParameter('name', $name)
                         ->getQuery()
