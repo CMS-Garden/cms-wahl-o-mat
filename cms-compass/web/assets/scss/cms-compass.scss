@@ -151,6 +151,12 @@ main {
         }
     }
     
+    div.warning {
+        
+        color: #f00;
+        
+    }
+    
     form {
 
         &.table-filter-form {
@@ -202,6 +208,10 @@ main {
             background-color: #e0e0e0;
         }
 
+        tr:hover {
+            background-color: #cfc !important;
+        }
+        
         tr, td {
             /*border: 1px solid #000;*/
             padding: 0.3em 0.3em;

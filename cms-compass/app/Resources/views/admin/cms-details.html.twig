@@ -29,7 +29,7 @@
             <ul>
                 {% for propertyDef in defsForMissingProperties %}
                     <li>
-                        {{ propertyDef.name }} {{ propertyDef.title.en }}
+                        {{ propertyDef.title.en }} (<code>{{ propertyDef.name }}</code>)
                     </li>
                 {% endfor %}
             </ul>
@@ -62,7 +62,7 @@
         <tbody>
             {% for property in properties %}
                 <tr>
-                    <td>{{ property.propertyDefinition.name }}</td>
+                    <td><code>{{ property.propertyDefinition.name }}</code></td>
                     <td>{{ property.propertyDefinition.title.en }}</td>
                     <td>
                         {% if property.propertyDefinition.required == true %}
