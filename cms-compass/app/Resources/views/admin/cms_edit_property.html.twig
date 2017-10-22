@@ -19,6 +19,13 @@
 
     {{ form_start(form) }}
     {{ form_widget(form) }}
+    <button type="submit" class="save-button">
+        {% if createProperty == true %}
+            Add property
+        {% else %}
+            Save property
+        {% endif %}
+    </button>
     <a href="{{ path('admin_show_cms_details', {'cmsId': cms.cmsId}) }}">Cancel</a>
     {{ form_end(form) }}
 {% endblock %}

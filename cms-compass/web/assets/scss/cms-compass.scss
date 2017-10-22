@@ -172,11 +172,17 @@ main {
 
             padding: 0.4em 0.8em;
         }
+        
+        button.save-button {
+            margin-right: 0.5em;
+        }
 
         label, button {
-            display: block;
-
             margin-top: 0.6em;
+        }
+        
+        label {
+            display: block;
         }
         
         textarea {

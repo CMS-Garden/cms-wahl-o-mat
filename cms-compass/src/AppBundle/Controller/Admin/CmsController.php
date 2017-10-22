@@ -139,25 +139,28 @@ class CmsController extends Controller
                       array(
                     'label' => 'Description (en)',
                     'data' => $cms->getDescriptionForLanguage('en')))
-                ->add('update-cms', SubmitType::class, array('label' => 'Save'))
+//                ->add('update-cms', SubmitType::class, array('label' => 'Save'))
                 ->getForm();
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $data = $form->getData();
+                $data = $form->getData();
 
-            $cms->setName($data['name']);
-            $cms->setHomepage($data['homepage']);
-            $cms->addDescriptionForLanguage('de', $data['description_de']);
-            $cms->addDescriptionForLanguage('en', $data['description_en']);
+                $cms->setName($data['name']);
+                $cms->setHomepage($data['homepage']);
+                $cms->addDescriptionForLanguage('de', $data['description_de']);
+                $cms->addDescriptionForLanguage('en', $data['description_en']);
 
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->merge($cms);
-            $entityManager->flush();
+                $entityManager = $this->getDoctrine()->getManager();
+                $entityManager->merge($cms);
+                $entityManager->flush();
 
-            return $this->redirectToRoute('admin_list_cms');
+                return $this->redirectToRoute('admin_list_cms');
+                
+             
+            
         }
 
         return $this->render('admin/cms-form.html.twig',
@@ -356,8 +359,7 @@ class CmsController extends Controller
                 else {
                     array_push($values, $property->getValues());
                 }
-                if(!$propertyDef->getMultipleValues()
-                        && count($values) >= 1) {
+                if (!$propertyDef->getMultipleValues() && count($values) >= 1) {
                     $values = $values[0];
                 }
                 $formBuilder->add('values', ChoiceType::class,
@@ -396,16 +398,16 @@ class CmsController extends Controller
                 . $propertyDef->getTypeName());
         }
 
-        if ($createProperty) {
-            $formBuilder->add('add_property', SubmitType::class,
-                              array(
-                'label' => 'Add property'));
-        }
-        else {
-            $formBuilder->add('add_property', SubmitType::class,
-                              array(
-                'label' => 'Save property'));
-        }
+//        if ($createProperty) {
+//            $formBuilder->add('add_property', SubmitType::class,
+//                              array(
+//                'label' => 'Add property'));
+//        }
+//        else {
+//            $formBuilder->add('add_property', SubmitType::class,
+//                              array(
+//                'label' => 'Save property'));
+//        }
 
         $form = $formBuilder->getForm();
         $form->handleRequest($request);

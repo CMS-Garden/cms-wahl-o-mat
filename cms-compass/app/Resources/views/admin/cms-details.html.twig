@@ -4,6 +4,8 @@
 
 {% block body %}
 
+    <a href="{{ path('admin_list_cms') }}">Back to list of CMS</a>
+
     <h1>Details about CMS {{ name }}</h1>
 
     <h2>General data</h2>
@@ -69,7 +71,13 @@
                             false
                         {% endif %}
                     </td>
-                    <td>{{ property.value }}</td>
+                    <td>
+                        {% if property.propertyDefinition.name == 'release_date' %}
+                            {{ property.value|date('Y-m-d') }}
+                        {% else %}
+                            {{ property.value }}
+                        {% endif %}
+                    </td>
                     <td>
                         <a href="{{ path('admin_edit_cms_property', {'cmsId': cmsId, 'propertyDefName': property.propertyDefinition.name}) }}">Edit</a>
                     </td>
