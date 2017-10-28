@@ -20,6 +20,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation as Serializer;
 
 /**
  * 
@@ -29,13 +30,21 @@ use Doctrine\ORM\Mapping as ORM;
 class EnumPropertyDefinition extends PropertyDefinition
 {
 
+     /**
+     *
+     * @Serializer\Groups("definition")
+     */
+    private $typeName = 'Enum';
+    
     /**
      * @ORM\Column(name="permitted_values", type="array")
+     * @Serializer\Groups("definition")
      */
     private $permittedValues;
 
     /**
      * @ORM\Column(name = "multiple_values", type="boolean")
+     * @Serializer\Groups("definition")
      */
     private $multipleValues;
 
@@ -45,10 +54,10 @@ class EnumPropertyDefinition extends PropertyDefinition
         $this->permittedValues = array();
     }
 
-    public function getTypeName() {
-        return "Enum";
+    public function getTypeName()
+    {
+        return $this->typeName;
     }
-
 
     public function getPermittedValues()
     {
@@ -73,7 +82,7 @@ class EnumPropertyDefinition extends PropertyDefinition
             }
         }
     }
-    
+
     public function getMultipleValues()
     {
         return $this->multipleValues;
@@ -83,7 +92,5 @@ class EnumPropertyDefinition extends PropertyDefinition
     {
         $this->multipleValues = $multipleValues;
     }
-
-
 
 }

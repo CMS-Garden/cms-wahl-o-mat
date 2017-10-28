@@ -20,6 +20,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation as Serializer;
 
 /**
  * 
@@ -28,28 +29,37 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class IntegerPropertyDefinition extends PropertyDefinition
 {
+     /**
+     *
+     * @Serializer\Groups("definition")
+     */
+    private $typeName = 'Integer';
+    
 
     /**
      *
      * @ORM\Column(type="string", nullable=true)
+     * @Serializer\Groups("definition")
      */
     private $unit;
 
     /**
      *
      * @ORM\Column(type="integer", nullable=true)
+     * @Serializer\Groups("definition")
      */
     private $minimum;
 
     /**
      *
      * @ORM\Column(type="integer", nullable=true)
+     * @Serializer\Groups("definition")
      */
     private $maximum;
 
     public function getTypeName()
     {
-        return "Integer";
+        return $this->typeName;
     }
 
     public function getUnit()

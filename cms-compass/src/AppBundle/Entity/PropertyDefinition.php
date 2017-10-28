@@ -21,6 +21,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation as Serializer;
 
 /**
  * Description of Property
@@ -38,29 +39,34 @@ abstract class PropertyDefinition
      * @ORM\Column(type="integer", name="property_definition_id")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Serializer\Groups("definition")
      */
     private $propertyId;
 
     /**
      * @ORM\Column(type="string", length=256, unique=true)
+     * @Serializer\Groups("definition")
      *
      */
     private $name;
 
     /**
      * @ORM\Column(type="array")
+     * @Serializer\Groups("definition")
      *
      */
     private $title;
 
     /**
      * @ORM\Column(type="array")
+     * @Serializer\Groups("definition")
      *
      */
     private $description;
 
     /**
      * @ORM\Column(type="boolean")
+     * @Serializer\Groups("definition")
      * 
      */
     private $required;
@@ -78,7 +84,7 @@ abstract class PropertyDefinition
     }
 
     abstract public function getTypeName();
-    
+
     public function getPropertyId()
     {
         return $this->propertyId;
@@ -118,7 +124,8 @@ abstract class PropertyDefinition
     {
         if ($this->hasTitleForLanguage($language)) {
             return $this->title[$language];
-        } else {
+        }
+        else {
             return null;
         }
     }
@@ -152,7 +159,8 @@ abstract class PropertyDefinition
     {
         if ($this->hasDescriptionForLanguage($language)) {
             return $this->description[$language];
-        } else {
+        }
+        else {
             return null;
         }
     }

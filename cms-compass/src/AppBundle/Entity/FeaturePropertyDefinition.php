@@ -20,6 +20,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation as Serializer;
 
 /**
  * 
@@ -28,8 +29,16 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class FeaturePropertyDefinition extends PropertyDefinition
 {
+
+    /**
+     *
+     * @Serializer\Groups("definition")
+     */
+    private $typeName = 'Feature';
+
     public function getTypeName()
     {
-        return "Feature";
+        return $this->typeName;
     }
+
 }

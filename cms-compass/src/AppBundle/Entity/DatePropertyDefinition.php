@@ -20,6 +20,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Table(name = "date_property_definitions")
@@ -27,8 +28,14 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class DatePropertyDefinition extends PropertyDefinition
 {
+     /**
+     *
+     * @Serializer\Groups("definition")
+     */
+    private $typeName = 'Date';
+    
     public function getTypeName()
     {
-        return "Date";
+        return $this->typeName;
     }
 }

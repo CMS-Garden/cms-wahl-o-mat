@@ -30,6 +30,7 @@ framework:
     fragments: ~
     http_method_override: true
     assets: ~
+    serializer: { enable_annotations: true}
     php_errors:
         log: true
 

@@ -21,6 +21,7 @@ namespace AppBundle\Entity;
 
 use AppBundle\Repository\PropertyDefinitionRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation as Serializer;
 
 /**
  * 
@@ -30,20 +31,28 @@ use Doctrine\ORM\Mapping as ORM;
 class StringPropertyDefinition extends PropertyDefinition
 {
 
-    public function getTypeName()
-    {
-        return "String";
-    }
-    
+    /**
+     *
+     * @Serializer\Groups("definition")
+     */
+    private $typeName = 'String';
+
     /**
      * @ORM\Column(type="integer", name="max_length", nullable=true)
+     * @Serializer\Groups("definition")
      */
     private $maxLength;
 
     /**
       @ORM\Column(type="boolean", name="html_permitted")
+     * @Serializer\Groups("definition")
      */
     private $htmlPermitted;
+
+    public function getTypeName()
+    {
+        return $this->typeName;
+    }
 
     public function getMaxLength()
     {
