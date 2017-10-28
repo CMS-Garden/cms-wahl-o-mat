@@ -19,6 +19,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\CMS;
 use AppBundle\Entity\PropertyDefinition;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -54,6 +55,17 @@ class CompassController extends Controller
                            array('groups' => array('definition')));
     }
 
+    /**
+     * @Route("/compass/cms", name="public_all_cms_as_json")
+     */
+    public function getAllCms() {
+        
+        $repository = $this->getDoctrine()->getRepository(CMS::class);
+        $allCms = $repository->findAll();
+        
+        return $this->json($allCms, 200, array(), array('groups' => array('cms')));
+    }
+    
     /**
      * @Route("/compass")
      */

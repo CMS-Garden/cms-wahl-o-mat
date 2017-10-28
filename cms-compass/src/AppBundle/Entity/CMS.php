@@ -21,6 +21,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation as Serializer;
 
 /**
  * Entity class for representing a CMS.
@@ -39,29 +40,34 @@ class CMS
      * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Serializer\Groups({"cms", "details"})
      */
     private $cmsId;
 
     /**
      * @ORM\Column(type="string", length=256, unique=true)
+     * @Serializer\Groups({"cms", "details"})
      *
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=2048, unique=true)
+     * @Serializer\Groups({"cms", "details"})
      *
      */
     private $homepage;
 
     /**
      * @ORM\Column(type="array")
+     * @Serializer\Groups({"cms", "details"})
      *
      */
     private $description;
 
     /**
      * @ORM\OneToMany(targetEntity="Property", mappedBy="cms", orphanRemoval=true, cascade={"remove"})
+     * @Serializer\Groups({"details"})
      */
     private $properties;
 
