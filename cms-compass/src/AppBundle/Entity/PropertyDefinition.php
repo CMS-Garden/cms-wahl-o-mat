@@ -39,20 +39,20 @@ abstract class PropertyDefinition
      * @ORM\Column(type="integer", name="property_definition_id")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Serializer\Groups("definition")
+     * @Serializer\Groups({"definition", "details"})
      */
     private $propertyId;
 
     /**
      * @ORM\Column(type="string", length=256, unique=true)
-     * @Serializer\Groups("definition")
+     * @Serializer\Groups({"definition", "details"})
      *
      */
     private $name;
 
     /**
      * @ORM\Column(type="array")
-     * @Serializer\Groups("definition")
+     * @Serializer\Groups({"definition", "details"})
      *
      */
     private $title;

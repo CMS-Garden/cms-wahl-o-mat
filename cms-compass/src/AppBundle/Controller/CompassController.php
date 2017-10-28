@@ -79,6 +79,18 @@ class CompassController extends Controller
     }
     
     /**
+     * @Route("/compass/cms/{cms}/details", name="public_get_cms_details_as_json")
+     */
+    public function getCmsDetails($cms) {
+        
+        $repository = $this->getDoctrine()->getRepository(CMS::class);
+        $cmsData = $repository->find($cms);
+        
+        return $this->json($cmsData, 200, array(), array('groups' => array('cms', 'details')));
+        
+    }
+    
+    /**
      * @Route("/compass")
      */
     public function showCompass()

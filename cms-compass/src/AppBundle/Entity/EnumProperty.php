@@ -21,6 +21,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation as Serializer;
 
 /**
  * Description of EnumProperty
@@ -35,6 +36,7 @@ class EnumProperty extends Property
 
     /**
      * @ORM\Column(type="array")
+     * @Serializer\Groups({"details"})
      */
     private $values;
 

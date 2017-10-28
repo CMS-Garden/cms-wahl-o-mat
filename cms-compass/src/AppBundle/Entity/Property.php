@@ -20,6 +20,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation as Serializer;
 
 /**
  * Description of Property
@@ -37,6 +38,7 @@ abstract class Property
      * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Serializer\Groups({"details"})
      * 
      */
     private $propertyId;
@@ -44,6 +46,7 @@ abstract class Property
     /**
      * @ORM\ManyToOne(targetEntity="PropertyDefinition", inversedBy="properties")
      * @ORM\JoinColumn(name="definition_id", referencedColumnName="property_definition_id")
+     * @Serializer\Groups({"details"})
      * 
      */
     private $propertyDefinition;

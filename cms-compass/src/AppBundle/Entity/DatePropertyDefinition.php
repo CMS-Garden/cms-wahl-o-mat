@@ -30,7 +30,7 @@ class DatePropertyDefinition extends PropertyDefinition
 {
      /**
      *
-     * @Serializer\Groups("definition")
+     * @Serializer\Groups({"definition", "details"})
      */
     private $typeName = 'Date';
     

@@ -22,6 +22,7 @@ namespace AppBundle\Entity;
 use AppBundle\Repository\PropertyRepository;
 use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
+use Symfony\Component\Serializer\Annotation as Serializer;
 
 /**
  * Description of StringProperty
@@ -36,6 +37,7 @@ class StringProperty extends Property
 
     /**
      * @ORM\Column(type="string")
+     * @Serializer\Groups({"details"})
      */
     private $value;
 

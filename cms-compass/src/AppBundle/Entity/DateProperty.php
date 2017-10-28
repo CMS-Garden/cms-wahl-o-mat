@@ -20,6 +20,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation as Serializer;
 
 /**
  * Description of DateProperty
@@ -34,6 +35,7 @@ class DateProperty extends Property
 
     /**
      * @ORM\Column(type="date");
+     * @Serializer\Groups({"details"})
      */
     private $value;
 

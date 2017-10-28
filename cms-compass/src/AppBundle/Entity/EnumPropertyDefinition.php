@@ -32,7 +32,7 @@ class EnumPropertyDefinition extends PropertyDefinition
 
      /**
      *
-     * @Serializer\Groups("definition")
+     * @Serializer\Groups({"definition", "details"})
      */
     private $typeName = 'Enum';
     

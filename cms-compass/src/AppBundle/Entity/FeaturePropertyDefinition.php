@@ -32,7 +32,7 @@ class FeaturePropertyDefinition extends PropertyDefinition
 
     /**
      *
-     * @Serializer\Groups("definition")
+     * @Serializer\Groups({"definition", "details"})
      */
     private $typeName = 'Feature';
 

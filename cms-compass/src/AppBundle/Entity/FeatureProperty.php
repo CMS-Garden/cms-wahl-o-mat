@@ -20,6 +20,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation as Serializer;
 
 /**
  * Description of FeatureProperty
@@ -35,6 +36,7 @@ class FeatureProperty extends Property
     
     /**
      * @ORM\Column(type="string")
+     * @Serializer\Groups({"details"})
      */
     private $value;
     
