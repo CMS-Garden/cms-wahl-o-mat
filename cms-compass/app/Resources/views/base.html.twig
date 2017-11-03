@@ -5,9 +5,9 @@
         <title>{% block title %}Welcome!{% endblock %}</title>
         {% block stylesheets %}
 
-            {% stylesheets 'assets/css/*' filter='scssphp' output='cms-compass.css' 
-                "assets/scss/cms-compass.scss"
-                "assets/css/base.css"
+            {% stylesheets 'assets/css/admin/*' filter='scssphp' output='admin/cms-compass.css' 
+                "assets/scss/admin/cms-compass.scss"
+                "assets/css/admin/base.css"
             %}
             <link rel="stylesheet" href="{{ asset_url }}">
             {% endstylesheets %}

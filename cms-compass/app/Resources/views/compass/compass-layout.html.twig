@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}CMS Compass{% endblock %}</title>
+        {% block stylesheets %}
+
+            {% stylesheets 'assets/css/public/*' filter='scssphp' output='cms-compass.css' 
+                "assets/scss/public/cms-compass.scss"
+            %}
+            <link rel="stylesheet" href="{{ asset_url }}">
+            {% endstylesheets %}
+        {% endblock %}
+
+        <link rel="stylesheet" href="{{ asset('assets/font-awesome/css/font-awesome.min.css')}}">
+        
+    </head>
+    <body>
+        <header>
+            <img src="{{ asset('assets/images/cms-garden-logo.png')}}" 
+                 alt=""
+                 role="presentation"/>
+        </header>
+        <main>
+            {% block body %}
+            {% endblock %}
+        </main>
+    </body>
+</html>

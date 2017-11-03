@@ -1,1 +1,104 @@
-<h1>{{ placeholder }}</h1>
+{% extends "compass/compass-layout.html.twig" %}
+
+{% block body %}
+
+    <div class="filterbar">
+        <h1>Filter CMS</h1>
+        <form method="GET" action="{{ path('compass') }}">
+            
+            <button type="submit">Apply filters</button>
+            <button type="reset">Reset filters</button>
+            
+            {% for propertyDefinition in propertyDefinitions %}
+                {% if propertyDefinition.typeName == 'Enum' %}
+                    <fieldset>
+                        <legend>{{ propertyDefinition.title['en'] }}</legend>
+                        {% for value in propertyDefinition.permittedValues %}
+                            <label class="enum">
+                                {% if value in filterValues[propertyDefinition.name] %}
+                                    <input type="checkbox" 
+                                           name="{{propertyDefinition.name}}[]" 
+                                           value="{{value}}"
+                                           checked="checked" />
+                                {% else %}
+                                    <input type="checkbox" 
+                                           name="{{propertyDefinition.name}}[]" 
+                                           value="{{value}}" />
+                                {% endif %}
+                                {{ value }}
+                            </label>
+                        {% endfor %}
+                    </fieldset>
+                {% elseif propertyDefinition.typeName == 'Feature' %}
+                    <label class="feature">
+                        <span>{{ propertyDefinition.title['en'] }}</span>
+                        <select name="{{ propertyDefinition.name }}">
+                            {% if filterValues[propertyDefinition.name] == "" %}
+                                <option selected="selected"></option>
+                            {% else %}
+                                <option></option>
+                            {% endif %}
+
+                            {% if filterValues[propertyDefinition.name] == "yes" %}
+                                <option value="yes" selected="selected">Yes</option>
+                            {% else %}
+                                <option value="yes">Yes</option>
+                            {% endif %}
+
+                            {% if filterValues[propertyDefinition.name] == "free_plugin" %}
+                                <option value="free_plugin" selected="selected">Free plugin</option>
+                            {% else %}
+                                <option value="free_plugin">Free plugin</option>
+                            {% endif %}
+
+                            {% if filterValues[propertyDefinition.name] == "avaiable" %}
+                                <option value="available" selected="selected">Available (integrated or as free plugin)</option>
+                            {% else %}
+                                <option value="available">Available (integrated or as free plugin)</option>
+                            {% endif %}
+
+                            {% if filterValues[propertyDefinition.name] == "commerical" %}
+                                <option value="commerical" selected="selected">Available (integrated or as free or commercial plugin)</option>
+                            {% else %}
+                                <option value="commerical">Available (integrated or as free or commercial plugin)</option>
+                            {% endif %}
+                        </select>
+                    </label>
+                {% endif %}
+            {% endfor %}
+
+            <button type="submit">Apply filters</button>
+            <button type="reset">Reset filters</button>
+        </form>
+    </div>
+    <div class="matrix">
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Property</th>
+                        {% for cms in allCms %}
+                        <th>{{ cms.name }}</th>
+                        {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for propertyDefinition in propertyDefinitions %}
+                    <tr>
+                        <th>{{ propertyDefinition.title['en'] }}</th>
+                            {% for cms in allCms %}
+                            <td>
+                                {% if propertyDefinition.typeName == 'Date' %}
+                                    {{ propertyValues[cms.name][propertyDefinition.name]|date("Y-m") }}
+                                {% else %}
+                                    {{ propertyValues[cms.name][propertyDefinition.name] }}
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}

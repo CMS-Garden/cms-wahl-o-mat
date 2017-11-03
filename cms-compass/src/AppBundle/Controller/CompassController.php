@@ -20,15 +20,18 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\CMS;
+use AppBundle\Entity\EnumPropertyDefinition;
+use AppBundle\Entity\Property;
 use AppBundle\Entity\PropertyDefinition;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 
 class CompassController extends Controller
 {
 
     /**
-     * @Route("/compass/property-definitions", name="public_all_property_definitions_as_json")
+     * @Route("/compass/property-definitions.json", name="public_all_property_definitions_as_json")
      */
     public function getPropertyDefinitions()
     {
@@ -40,7 +43,7 @@ class CompassController extends Controller
     }
 
     /**
-     * @Route("/compass/property-definitions/{propertyDefName}", name="public_property_definition_as_json")
+     * @Route("/compass/property-definitions/{propertyDefName}.json", name="public_property_definition_as_json")
      */
     public function getPropertyDefinition($propertyDefName)
     {
@@ -56,53 +59,120 @@ class CompassController extends Controller
     }
 
     /**
-     * @Route("/compass/cms", name="public_all_cms_as_json")
+     * @Route("/compass/cms.json", name="public_all_cms_as_json")
      */
-    public function getAllCms() {
-        
+    public function getAllCms()
+    {
+
         $repository = $this->getDoctrine()->getRepository(CMS::class);
         $allCms = $repository->findAll();
-        
-        return $this->json($allCms, 200, array(), array('groups' => array('cms')));
-    }
-    
-    /**
-     * @Route("/compass/cms/{cms}", name="public_get_cms_as_json")
-     */
-    public function getCms($cms) {
-        
-        $repository = $this->getDoctrine()->getRepository(CMS::class);
-        $cmsData = $repository->find($cms);
-        
-        return $this->json($cmsData, 200, array(), array('groups' => array('cms')));
-        
-    }
-    
-    /**
-     * @Route("/compass/cms/{cms}/details", name="public_get_cms_details_as_json")
-     */
-    public function getCmsDetails($cms) {
-        
-        $repository = $this->getDoctrine()->getRepository(CMS::class);
-        $cmsData = $repository->find($cms);
-        
-        return $this->json($cmsData, 200, array(), array('groups' => array('cms', 'details')));
-        
-    }
-    
-    /**
-     * @Route("/compass")
-     */
-    public function showCompass()
-    {
-        return $this->render('compass/compass.html.twig',
-                             array(
-                    'placeholder' => 'CMS Compass placeholder',
-        ));
+
+        return $this->json($allCms, 200, array(),
+                           array('groups' => array('cms')));
     }
 
     /**
-     * @Route("/compass/cms")
+     * @Route("/compass/cms/{cms}.json", name="public_get_cms_as_json")
+     */
+    public function getCms($cms)
+    {
+
+        $repository = $this->getDoctrine()->getRepository(CMS::class);
+        $cmsData = $repository->find($cms);
+
+        return $this->json($cmsData, 200, array(),
+                           array('groups' => array('cms')));
+    }
+
+    /**
+     * @Route("/compass/cms/{cms}/details.json", name="public_get_cms_details_as_json")
+     */
+    public function getCmsDetails($cms)
+    {
+
+        $repository = $this->getDoctrine()->getRepository(CMS::class);
+        $cmsData = $repository->find($cms);
+
+        return $this->json($cmsData, 200, array(),
+                           array('groups' => array('cms', 'details')));
+    }
+
+    /**
+     * @Route("/", name="compass")
+     */
+    public function showCompass(Request $request)
+    {
+        $propertyDefinitionsRepo = $this->getDoctrine()->getRepository(PropertyDefinition::class);
+        $propertyDefinitions = $propertyDefinitionsRepo->findAll();
+
+        $filterValues = array();
+        foreach ($propertyDefinitions as $propertyDefinition) {
+
+            if ($request->get($propertyDefinition->getName()) !== null) {
+
+                $filterValues[$propertyDefinition->getName()] = $request->get($propertyDefinition->getName());
+            }
+            else {
+                $filterValues[$propertyDefinition->getName()] = "";
+            }
+        }
+
+        $cmsRepo = $this->getDoctrine()->getRepository(CMS::class);
+        $allCms = $cmsRepo->findBy(array(), array('name' => 'asc'));
+
+        $propertyRepo = $this->getDoctrine()->getRepository(Property::class);
+        $properties = $propertyRepo->findAll();
+
+        //Prepare and fill propertyValues array. 
+        //Structure: properties[$cms.name[$propertyDefinition.name][$value]
+        $propertyValues = array();
+        foreach ($properties as $property) {
+
+            $propertyValues[$property->getCms()->getName()][$property->getPropertyDefinition()->getName()]
+                    = $property->getValue();
+        }
+
+        // Ensure that there is at least an empty entry in the propertyValues 
+        // array for each propertyDefinition because Twig does not like not
+        // existing array keys...
+        foreach ($allCms as $cms) {
+
+            if (!array_key_exists($cms->getName(), $propertyValues)) {
+                $propertyValues[$cms->getName()] = array();
+            }
+
+            foreach ($propertyDefinitions as $propertyDefinition) {
+
+                if (!array_key_exists($propertyDefinition->getName(),
+                                      $propertyValues[$cms->getName()])) {
+                    $propertyValues[$cms->getName()][$propertyDefinition->getName()] = "";
+                }
+            }
+        }
+
+        return $this->render('compass/compass.html.twig',
+                             array(
+                    'propertyDefinitions' => $propertyDefinitions,
+                    'filterValues' => $filterValues,
+                    'allCms' => $allCms,
+                    'propertyValues' => $propertyValues
+        ));
+    }
+
+    private function createEnumPropertyChoices(
+    EnumPropertyDefinition $propertyDefinition)
+    {
+        $choices = array();
+        foreach ($propertyDefinition->getPermittedValues() as $value) {
+            //array_push($choices, $value);
+            $choices[$value] = $value;
+        }
+
+        return $choices;
+    }
+
+    /**
+     * @Route("/compass/cms.html")
      */
     public function listCms()
     {
@@ -111,7 +181,7 @@ class CompassController extends Controller
 
     /**
      *
-     * @Route("/compass/cms/{cms}")
+     * @Route("/compass/cms/{cms}.html")
      * 
      */
     public function showCmsDetails($cms)
@@ -123,7 +193,7 @@ class CompassController extends Controller
     }
 
     /**
-     * @Route("/compass/features")
+     * @Route("/compass/properties.html")
      */
     public function showFeatures()
     {

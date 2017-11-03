@@ -1,0 +1,103 @@
+$color_cmsg_green: #6da112;
+$color_cmsg_green_link: #5e8a1d;
+$color_cmsg_grey: #3f3f40;
+$color_cmsg_blue_dark: #0c5998;
+$color_cmsg_blue_light: #0a91cc;
+$color_cmsg_red: #b50521;
+$color_cmsg_yellow: #f18600;
+
+$color_controllink: $color_cmsg_green_link;
+
+$background_nav: #222;
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+.a11y-hidden {
+    width: 1px;
+    height: 1px;
+
+    position: absolute;
+    top: -10px;
+
+    overflow: hidden;
+}
+
+header {
+
+    background-image: url('/assets/images/cmsg-tapete.png');
+
+    height: 150px;
+    padding: 15px;
+}
+
+main {
+
+    display: flex;
+
+    padding-left: 1em;
+    padding-right: 1em;
+
+    .filterbar {
+
+        background-color: #eee;
+
+        flex: 1;
+
+        padding: 0.4em 0.6em;
+
+        fieldset {
+            margin-top: 0.5em;
+            margin-bottom: 0.5em;
+        }
+
+        h1 {
+            font-size: 1em;
+        }
+
+        label {
+            display: block;
+
+            margin-bottom: 0.5em;
+
+            span {
+                display: block;
+            }
+        }
+    }
+
+    .matrix {
+        flex: 2;
+
+        padding-left: 1em;
+        padding-right: 1em;
+
+        table {
+
+            thead tr,
+            tbody tr:nth-child(even) {
+                background-color: #e0e0e0;
+            }
+
+            tr:hover {
+                background-color: #cfc !important;
+            }
+
+            tr, td {
+                /*border: 1px solid #000;*/
+                padding: 0.3em 0.3em;
+            }
+            
+            td {
+                text-align: center;
+            }
+
+        }
+    }
+}
