@@ -20,9 +20,18 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\CMS;
+use AppBundle\Entity\DateProperty;
+use AppBundle\Entity\DatePropertyDefinition;
+use AppBundle\Entity\EnumProperty;
 use AppBundle\Entity\EnumPropertyDefinition;
+use AppBundle\Entity\FeatureProperty;
+use AppBundle\Entity\FeaturePropertyDefinition;
+use AppBundle\Entity\IntegerProperty;
+use AppBundle\Entity\IntegerPropertyDefinition;
 use AppBundle\Entity\Property;
 use AppBundle\Entity\PropertyDefinition;
+use AppBundle\Entity\StringProperty;
+use AppBundle\Entity\StringPropertyDefinition;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -103,7 +112,28 @@ class CompassController extends Controller
     public function showCompass(Request $request)
     {
         $propertyDefinitionsRepo = $this->getDoctrine()->getRepository(PropertyDefinition::class);
+        $cmsRepo = $this->getDoctrine()->getRepository(CMS::class);
+
         $propertyDefinitions = $propertyDefinitionsRepo->findAll();
+        $values = array();
+        foreach ($propertyDefinitions as $definition) {
+
+            if ($definition instanceof FeaturePropertyDefinition &&
+                    $request->get($definition->getName()) !== null &&
+                    strlen($request->get($definition->getName())) > 0) {
+
+                $values[$definition->getName()] = $request->get($definition->getName());
+            }
+
+            if ($definition instanceof EnumPropertyDefinition &&
+                    $request->get($definition->getName()) !== null &&
+                    count($request->get($definition->getName())) > 0) {
+
+                $values[$definition->getName()] = $request->get($definition->getName());
+            }
+        }
+
+        $allCms = $cmsRepo->filterCmsByProperties($values);
 
         $filterValues = array();
         foreach ($propertyDefinitions as $propertyDefinition) {
@@ -117,14 +147,8 @@ class CompassController extends Controller
             }
         }
 
-        $cmsRepo = $this->getDoctrine()->getRepository(CMS::class);
-        $allCms = $cmsRepo->findBy(array(), array('name' => 'asc'));
-
         $propertyRepo = $this->getDoctrine()->getRepository(Property::class);
         $properties = $propertyRepo->findAll();
-
-        //Prepare and fill propertyValues array. 
-        //Structure: properties[$cms.name[$propertyDefinition.name][$value]
         $propertyValues = array();
         foreach ($properties as $property) {
 
@@ -132,9 +156,6 @@ class CompassController extends Controller
                     = $property->getValue();
         }
 
-        // Ensure that there is at least an empty entry in the propertyValues 
-        // array for each propertyDefinition because Twig does not like not
-        // existing array keys...
         foreach ($allCms as $cms) {
 
             if (!array_key_exists($cms->getName(), $propertyValues)) {
@@ -145,7 +166,8 @@ class CompassController extends Controller
 
                 if (!array_key_exists($propertyDefinition->getName(),
                                       $propertyValues[$cms->getName()])) {
-                    $propertyValues[$cms->getName()][$propertyDefinition->getName()] = "";
+                    $propertyValues[$cms->getName()][$propertyDefinition->getName()]
+                            = "";
                 }
             }
         }
@@ -159,16 +181,27 @@ class CompassController extends Controller
         ));
     }
 
-    private function createEnumPropertyChoices(
-    EnumPropertyDefinition $propertyDefinition)
+    private function getPropertyRepository(PropertyDefinition $definition)
     {
-        $choices = array();
-        foreach ($propertyDefinition->getPermittedValues() as $value) {
-            //array_push($choices, $value);
-            $choices[$value] = $value;
-        }
 
-        return $choices;
+        if ($definition instanceof DatePropertyDefinition) {
+            return $this->getDoctrine()->getRepository(DateProperty::class);
+        }
+        else if ($definition instanceof EnumPropertyDefinition) {
+            return $this->getDoctrine()->getRepository(EnumProperty::class);
+        }
+        else if ($definition instanceof FeaturePropertyDefinition) {
+            return $this->getDoctrine()->getRepository(FeatureProperty::class);
+        }
+        else if ($definition instanceof IntegerPropertyDefinition) {
+            return $this->getDoctrine()->getRepository(IntegerProperty::class);
+        }
+        else if ($definition instanceof StringPropertyDefinition) {
+            return $this->getDoctrine()->getRepository(StringProperty::class);
+        }
+        else {
+            return null;
+        }
     }
 
     /**

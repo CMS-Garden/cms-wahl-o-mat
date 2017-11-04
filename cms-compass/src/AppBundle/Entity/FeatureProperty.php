@@ -28,7 +28,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
  * @author <a href="mailto:jens.pelzetter@googlemail.com">Jens Pelzetter</a>
  * 
  * @ORM\Table(name="feature_properties")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\PropertyRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\FeaturePropertyRepository")
  */
 class FeatureProperty extends Property
 {

@@ -19,21 +19,147 @@
 
 namespace AppBundle\Repository;
 
+use AppBundle\Entity\EnumPropertyDefinition;
+use AppBundle\Entity\FeaturePropertyDefinition;
+use AppBundle\Entity\PropertyDefinition;
 use Doctrine\ORM\EntityRepository;
 
 class CmsRepository extends EntityRepository
 {
-    public function filterCmsByName($filter) {
-        
-        $queryBuilder = $this->createQueryBuilder("c");
-        
-        return $queryBuilder
-        ->where($queryBuilder->expr()->like('c.name', ':name'))
-        ->orderBy('c.name', 'ASC')
-        ->setParameter('name', '%' . $filter . '%')
-        ->getQuery()
-        ->getResult();
-    }
-    
-}
 
+    public function filterCmsByName($filter)
+    {
+
+        $queryBuilder = $this->createQueryBuilder("c");
+
+        return $queryBuilder
+                        ->where($queryBuilder->expr()->like('c.name', ':name'))
+                        ->orderBy('c.name', 'ASC')
+                        ->setParameter('name', '%' . $filter . '%')
+                        ->getQuery()
+                        ->getResult();
+    }
+
+    public function filterCmsByProperties($values)
+    {
+
+        $this->getEntityManager()->getRepository(PropertyDefinition::class);
+
+        $filters = $this->buildPropertyFilters($values);
+
+        $queryBuilder = $this->createQueryBuilder('c');
+
+        foreach ($filters as $filter) {
+            $queryBuilder->andWhere($queryBuilder->expr()->in('c.cmsId', $filter));
+        }
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+    private function buildPropertyFilters($values)
+    {
+        $propertyDefinitionsRepo = $this->getEntityManager()->getRepository(PropertyDefinition::class);
+        $propertyDefinitions = $propertyDefinitionsRepo->findAll();
+
+        $filters = array();
+        foreach ($propertyDefinitions as $definition) {
+
+            if ($definition instanceof FeaturePropertyDefinition &&
+                    array_key_exists($definition->getName(), $values)) {
+
+                $filter = $this->buildFeaturePropertyFilter($definition,
+                                                            $values[$definition->getName()]);
+                array_push($filters, $filter);
+            }
+
+            if ($definition instanceof EnumPropertyDefinition &&
+                    array_key_exists($definition->getName(), $values) &&
+                    count($values[$definition->getName()]) > 0) {
+
+                $filter = $this->buildEnumPropertyFilter($definition,
+                                                         $values[$definition->getName()]);
+                array_push($filters, $filter);
+            }
+
+        }
+
+        return $filters;
+    }
+
+    private function buildFeaturePropertyFilter(PropertyDefinition $definition,
+                                                $value)
+    {
+        $queryBuilder = $this->createQueryBuilder('cms');
+        $queryBuilder->select('cms.cmsId')
+                ->join('cms.properties', 'p')
+                ->leftJoin('AppBundle:FeatureProperty', 'fp', 'WITH',
+                           'p.propertyId = fp.propertyId')
+                ->join('p.propertyDefinition', 'd')
+                ->where($queryBuilder->expr()->eq('d.name', ':name'));
+
+        if ($value === 'yes') {
+            $queryBuilder->andWhere($queryBuilder->expr()->eq('fp.value',
+                                                              '\'yes\''));
+        }
+        else if ($value === 'free_plugin') {
+            $queryBuilder->andWhere($queryBuilder->expr()->eq('fp.value',
+                                                              '\'plugin\''));
+        }
+        else if ($value === 'available') {
+            $whereYes = $queryBuilder->expr()->eq('fp.value', '\'yes\'');
+            $wherePlugin = $queryBuilder->expr()->eq('fp.value', '\'plugin\'');
+            $queryBuilder->andWhere($queryBuilder->expr()->orX($whereYes,
+                                                               $wherePlugin));
+        }
+        else if ($value === 'commercial') {
+            $whereYes = $queryBuilder->expr()->eq('fp.value', '\'yes\'');
+            $wherePlugin = $queryBuilder->expr()->eq('fp.value', '\'plugin\'');
+            $whereCommerical = $queryBuilder->expr()->eq('fp.value',
+                                                         '\'commercial\'');
+            $queryBuilder->andWhere($queryBuilder->expr()->orX($whereYes,
+                                                               $wherePlugin,
+                                                               $whereCommerical));
+        }
+
+        $queryBuilder->setParameter('name', $definition->getName());
+
+        return $this->queryResultsToString($queryBuilder->getQuery()->getResult());
+    }
+
+    private function buildEnumPropertyFilter(PropertyDefinition $definition,
+                                             $values)
+    {
+        $queryBuilder = $this->createQueryBuilder('cms');
+        $queryBuilder->select('cms.cmsId')
+                ->join('cms.properties', 'p')
+                ->leftJoin('AppBundle:EnumProperty', 'ep', 'WITH',
+                           'p.propertyId = ep.propertyId')
+                ->join('p.propertyDefinition', 'd')
+                ->where($queryBuilder->expr()->eq('d.name', ':name'));
+
+        $whereValues = $queryBuilder->expr()->orX();
+        foreach ($values as $value) {
+            $whereValue = $queryBuilder->expr()->like('ep.values',
+                                                 $queryBuilder->expr()->literal('%' . $value . '%'));
+            $whereValues->add($whereValue);
+        }
+        $queryBuilder->andWhere($whereValues);
+
+        $queryBuilder->setParameter('name', $definition->getName());
+
+        return $this->queryResultsToString($queryBuilder->getQuery()->getResult());
+    }
+
+    private function queryResultsToString($queryResults)
+    {
+        $result = '';
+        foreach ($queryResults as $queryResult) {
+            if (strlen($result) > 0) {
+                $result .= ",";
+            }
+            $result .= $queryResult['cmsId'];
+        }
+
+        return $result;
+    }
+}

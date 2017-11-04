@@ -5,10 +5,10 @@
     <div class="filterbar">
         <h1>Filter CMS</h1>
         <form method="GET" action="{{ path('compass') }}">
-            
+
             <button type="submit">Apply filters</button>
             <button type="reset">Reset filters</button>
-            
+
             {% for propertyDefinition in propertyDefinitions %}
                 {% if propertyDefinition.typeName == 'Enum' %}
                     <fieldset>
@@ -51,7 +51,7 @@
                                 <option value="free_plugin">Free plugin</option>
                             {% endif %}
 
-                            {% if filterValues[propertyDefinition.name] == "avaiable" %}
+                            {% if filterValues[propertyDefinition.name] == "available" %}
                                 <option value="available" selected="selected">Available (integrated or as free plugin)</option>
                             {% else %}
                                 <option value="available">Available (integrated or as free plugin)</option>
@@ -73,32 +73,38 @@
     </div>
     <div class="matrix">
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Property</th>
-                        {% for cms in allCms %}
-                        <th>{{ cms.name }}</th>
-                        {% endfor %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for propertyDefinition in propertyDefinitions %}
+        {% if allCms|length > 0 %}
+            <table>
+                <thead>
                     <tr>
-                        <th>{{ propertyDefinition.title['en'] }}</th>
+                        <th>Property</th>
                             {% for cms in allCms %}
-                            <td>
-                                {% if propertyDefinition.typeName == 'Date' %}
-                                    {{ propertyValues[cms.name][propertyDefinition.name]|date("Y-m") }}
-                                {% else %}
-                                    {{ propertyValues[cms.name][propertyDefinition.name] }}
-                                {% endif %}
-                            </td>
-                        {% endfor %}
+                            <th>{{ cms.name }}</th>
+                            {% endfor %}
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for propertyDefinition in propertyDefinitions %}
+                        <tr>
+                            <th>{{ propertyDefinition.title['en'] }}</th>
+                                {% for cms in allCms %}
+                                <td>
+                                    {% if propertyDefinition.typeName == 'Date' %}
+                                        {{ propertyValues[cms.name][propertyDefinition.name]|date("Y-m") }}
+                                    {% else %}
+                                        {{ propertyValues[cms.name][propertyDefinition.name] }}
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="no-matching-cms">
+                No CMS matches your search criteria.
+            </div>
+        {% endif %}
     </div>
 
 {% endblock %}
